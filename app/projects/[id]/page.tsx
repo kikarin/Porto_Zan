@@ -1,13 +1,9 @@
+"use client";
+
 import ProjectDetail from "@/components/ProjectDetail";
-import type { Metadata } from "next";
+import { useParams } from "next/navigation";
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  return {
-    title: `Project ${params.id}`,
-    description: "Detail project",
-  };
-}
-
-export default function ProjectDetailPage({ params }: { params: { id: string } }) {
-  return <ProjectDetail projectId={params.id} />;
+export default function ProjectDetailPage() {
+  const params = useParams();
+  return <ProjectDetail projectId={params.id as string} />;
 }
