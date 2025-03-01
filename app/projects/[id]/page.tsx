@@ -1,14 +1,13 @@
 import ProjectDetail from "@/components/ProjectDetail";
+import type { Metadata } from "next";
 
-type Props = {
-  params: { id: string };
-};
-
-// Menentukan ID project secara statis (kalau nggak pakai API)
-export async function generateStaticParams() {
-  return [{ id: "1" }, { id: "2" }, { id: "3" }, { id: "4" }, { id: "5" }, { id: "6" }, { id: "7" }, { id: "8" }]; // Bisa ubah sesuai kebutuhan
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  return {
+    title: `Project ${params.id}`,
+    description: "Detail project",
+  };
 }
 
-export default function ProjectDetailPage({ params }: Props) {
+export default function ProjectDetailPage({ params }: { params: { id: string } }) {
   return <ProjectDetail projectId={params.id} />;
 }
