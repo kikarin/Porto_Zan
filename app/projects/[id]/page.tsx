@@ -1,12 +1,12 @@
 import ProjectDetail from "@/components/ProjectDetail";
 
-type Props = {
+interface PageProps {
   params: {
     id: string;
   };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
 
-export default function ProjectDetailPage({ params }: Props) {
+export default async function ProjectDetailPage({ params }: PageProps) {
   return <ProjectDetail projectId={params.id} />;
 }
