@@ -37,6 +37,18 @@ interface Pointer {
 	color: ColorRGB;
 }
 
+interface ExtensionFormat {
+	internalFormat: number;
+	format: number;
+}
+
+interface GLExtensions {
+	formatRGBA: ExtensionFormat;
+	formatRG: ExtensionFormat;
+	formatR: ExtensionFormat;
+	supportLinearFiltering: boolean;
+}
+
 function pointerPrototype(): Pointer {
 	return {
 		id: -1,
@@ -75,11 +87,11 @@ export default function SplashCursor({
 		if (!canvas) return; // Guard canvas early
 
 		// Pointer and config setup
-		let pointers: Pointer[] = [pointerPrototype()];
+		const pointers: Pointer[] = [pointerPrototype()];
 
 		// All these are guaranteed numbers due to destructuring defaults
 		// So we cast them to remove TS warnings:
-		let config = {
+		const config = {
 			SIM_RESOLUTION: SIM_RESOLUTION!,
 			DYE_RESOLUTION: DYE_RESOLUTION!,
 			CAPTURE_RESOLUTION: CAPTURE_RESOLUTION!,
@@ -158,9 +170,9 @@ export default function SplashCursor({
 				? (gl as WebGL2RenderingContext).HALF_FLOAT
 				: (halfFloat && (halfFloat as any).HALF_FLOAT_OES) || 0;
 
-			let formatRGBA: any;
-			let formatRG: any;
-			let formatR: any;
+			let formatRGBA: ExtensionFormat;
+			let formatRG: ExtensionFormat;
+			let formatR: ExtensionFormat;
 
 			if (isWebGL2) {
 				formatRGBA = getSupportedFormat(
@@ -316,7 +328,7 @@ export default function SplashCursor({
 		}
 
 		function getUniforms(program: WebGLProgram) {
-			let uniforms: Record<string, WebGLUniformLocation | null> = {};
+			const uniforms: Record<string, WebGLUniformLocation | null> = {};
 			const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 			for (let i = 0; i < uniformCount; i++) {
 				const uniformInfo = gl.getActiveUniform(program, i);
@@ -1322,9 +1334,8 @@ export default function SplashCursor({
 		}
 
 		function correctRadius(radius: number) {
-			// Use non-null assertion (canvas can't be null here)
-			const aspectRatio = canvas!.width / canvas!.height;
-			if (aspectRatio > 1) radius *= aspectRatio;
+			const aspect = canvas!.width / canvas!.height;
+			if (aspect > 1) radius *= aspect;
 			return radius;
 		}
 
