@@ -72,6 +72,10 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
         }
     };
 
+    const setWordRef = (el: HTMLSpanElement | null, index: number): void => {
+        wordRefs.current[index] = el;
+    };
+
     return (
         <div
             className="relative flex gap-4 justify-center items-center flex-wrap"
@@ -82,7 +86,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
                 return (
                     <span
                         key={index}
-                        ref={(el) => (wordRefs.current[index] = el)}
+                        ref={(el) => setWordRef(el, index)}
                         className="relative text-[3rem] font-black cursor-pointer"
                         style={{
                             filter: manualMode
