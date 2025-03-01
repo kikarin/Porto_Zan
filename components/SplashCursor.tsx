@@ -37,6 +37,20 @@ interface Pointer {
   color: ColorRGB;
 }
 
+interface WebGLUniformLocation {
+  readonly __brand: 'WebGLUniformLocation';
+}
+
+interface UniformValues {
+  [key: string]: number | WebGLUniformLocation | null;
+}
+
+interface AnimationProps {
+  opacity?: number;
+  transform?: string;
+  [key: string]: unknown;
+}
+
 function pointerPrototype(): Pointer {
   return {
     id: -1,
@@ -315,8 +329,8 @@ export default function SplashCursor({
       return program;
     }
 
-    function getUniforms(program: WebGLProgram) {
-      let uniforms: Record<string, WebGLUniformLocation | null> = {};
+    function getUniforms(program: WebGLProgram): UniformValues {
+      const uniforms: UniformValues = {};
       const uniformCount = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
       for (let i = 0; i < uniformCount; i++) {
         const uniformInfo = gl.getActiveUniform(program, i);
@@ -352,7 +366,7 @@ export default function SplashCursor({
       fragmentShaderSource: string;
       programs: Record<number, WebGLProgram | null>;
       activeProgram: WebGLProgram | null;
-      uniforms: Record<string, WebGLUniformLocation | null>;
+      uniforms: UniformValues;
 
       constructor(
         vertexShader: WebGLShader | null,
@@ -1322,9 +1336,8 @@ export default function SplashCursor({
     }
 
     function correctRadius(radius: number) {
-      // Use non-null assertion (canvas can't be null here)
-      const aspectRatio = canvas!.width / canvas!.height;
-      if (aspectRatio > 1) radius *= aspectRatio;
+      const aspect = canvas!.width / canvas!.height;
+      if (aspect > 1) radius *= aspect;
       return radius;
     }
 
