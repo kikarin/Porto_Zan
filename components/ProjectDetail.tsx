@@ -34,7 +34,7 @@ const projects = [
     id: "3",
     title: "RTIK Website",
     description:
-      "Sebagai bagian dari tugas saya di PT Bonet Utama, saya mengembangkan website RTIK untuk menampilkan informasi komunitas Relawan TIK. Proyek ini menjadi pengalaman pertama saya dalam menggunakan Next.js, metode Repository Pattern, dan PostgreSQL, yang saya pelajari dan terapkan dengan cepat. Saya bertanggung jawab atas pengembangan frontend serta integrasi CMS untuk memastikan pengelolaan konten yang efisien dan pengalaman pengguna yang optimal.",
+      "Sebagian dari tugas saya di PT Bonet Utama, saya mengembangkan website RTIK untuk menampilkan informasi komunitas Relawan TIK. Proyek ini menjadi pengalaman pertama saya dalam menggunakan Next.js, metode Repository Pattern, dan PostgreSQL, yang saya pelajari dan terapkan dengan cepat. Saya bertanggung jawab atas pengembangan frontend serta integrasi CMS untuk memastikan pengelolaan konten yang efisien dan pengalaman pengguna yang optimal.",
     img: "/rtik.png",
     techIcons: [
       "/next.svg",
@@ -75,7 +75,7 @@ const projects = [
     id: "6",
     title: "Jasa Pembuatan Website Ujikom",
     description:
-      "Sebagai bagian dari pengalaman saya di bidang pengembangan web, saya membuka jasa pembuatan website untuk ujikom dengan teknologi Laravel. Saya telah menyelesaikan 18 proyek dengan sistem multi-role, memastikan setiap website dapat digunakan sesuai kebutuhan pengguna yang berbeda. Website yang saya kembangkan siap digunakan tanpa perlu pengaturan tambahan, sehingga peserta ujikom dapat fokus pada pemahaman konsep tanpa hambatan teknis. Dengan pengalaman menyelesaikan hampir 20 proyek, saya berkomitmen memberikan hasil yang berkualitas dan membantu peserta ujikom meraih nilai terbaik.",
+      "Sebagian dari pengalaman saya di bidang pengembangan web, saya membuka jasa pembuatan website untuk ujikom dengan teknologi Laravel. Saya telah menyelesaikan 18 proyek dengan sistem multi-role, memastikan setiap website dapat digunakan sesuai kebutuhan pengguna yang berbeda. Website yang saya kembangkan siap digunakan tanpa perlu pengaturan tambahan, sehingga peserta ujikom dapat fokus pada pemahaman konsep tanpa hambatan teknis. Dengan pengalaman menyelesaikan hampir 20 proyek, saya berkomitmen memberikan hasil yang berkualitas dan membantu peserta ujikom meraih nilai terbaik.",
     img: "/jasa_ujikom.png",
     techIcons: [
       "/laravel.png",
@@ -88,7 +88,7 @@ const projects = [
     id: "7",
     title: "Game Sederhana",
     description:
-      "Sebagai bagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
+      "Sebagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
     img: "/game.png",
     techIcons: [
       "/js.png"
@@ -99,7 +99,7 @@ const projects = [
     id: "8",
     title: "Website Hotel",
     description:
-      "Sebagai bagian dari pelatihan di PT Bonet Utama saat saya kelas 10, saya mengembangkan website hotel yang berfungsi sebagai sistem reservasi dan manajemen kamar. Proyek ini menggunakan Laravel sebagai backend API, Next.js sebagai frontend, serta MySQL sebagai database utama Pelatihan ini memberikan saya pengalaman langsung dalam membangun aplikasi fullstack serta integrasi antara frontend dan backend yang optimal.",
+      "Sebagian dari pelatihan di PT Bonet Utama saat saya kelas 10, saya mengembangkan website hotel yang berfungsi sebagai sistem reservasi dan manajemen kamar. Proyek ini menggunakan Laravel sebagai backend API, Next.js sebagai frontend, serta MySQL sebagai database utama Pelatihan ini memberikan saya pengalaman langsung dalam membangun aplikasi fullstack serta integrasi antara frontend dan backend yang optimal.",
     img: "/hotel.png",
     techIcons: [
       "/laravel.png",
@@ -121,9 +121,6 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
       <div className="text-center text-red-600">Proyek tidak ditemukan.</div>
     );
   }
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
 
   // Navigasi prev dan next
   const currentId = parseInt(projectId);

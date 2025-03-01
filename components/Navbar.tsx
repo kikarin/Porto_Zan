@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { HiMenu, HiX } from "react-icons/hi";
 import { Link as ScrollLink } from "react-scroll";
+import Image from "next/image";
 
 const navItems = [
   { label: "Home", to: "hero" },
@@ -42,10 +43,12 @@ export default function Navbar() {
   <motion.div
     className="cursor-pointer"
   >
-    <img
-      src="/logo-ts.png" // Ganti dengan path logo yang benar
+    <Image
+      src="/logo-ts.png"
       alt="Logo"
-      className="w-14 h-auto" // Sesuaikan ukuran logo
+      width={56}
+      height={56}
+      className="w-14 h-auto"
     />
   </motion.div>
 </Link>

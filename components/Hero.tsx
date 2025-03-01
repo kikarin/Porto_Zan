@@ -55,9 +55,9 @@ const Hero = () => {
           transition={{ duration: 1 }}
         >
           <p className="mt-4 text-base sm:text-lg md:text-xl text-gray-500 max-w-md">
-            "Membangun solusi digital inovatif dengan pendekatan kolaboratif.
+            &quot;Membangun solusi digital inovatif dengan pendekatan kolaboratif.
             siap membantu bisnis Anda melalui pengembangan aplikasi berbasis web
-            dan mobile yang responsif dan berkinerja tinggi."
+            dan mobile yang responsif dan berkinerja tinggi.&quot;
           </p>
         </motion.div>
 

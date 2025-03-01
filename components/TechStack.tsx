@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Tilt from "react-parallax-tilt";
 import { HiEye, HiEyeOff } from "react-icons/hi";
@@ -54,7 +54,6 @@ const categories = [
 export default function TechStack() {
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [isVisible, setIsVisible] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
 
   const categoryCounts = useMemo(() => {
     return techStack.reduce((acc, tech) => {

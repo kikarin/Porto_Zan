@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import Tilt from "react-parallax-tilt";
+import Image from "next/image";
 
 const services = [
   {
@@ -115,9 +116,11 @@ export default function MyServices() {
               >
                 {/* Icon di Tengah Atas */}
                 <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-20">
-                  <img
+                  <Image
                     src={service.icon}
                     alt={service.title}
+                    width={80}
+                    height={80}
                     className="w-20 h-20 object-contain bg-white rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
