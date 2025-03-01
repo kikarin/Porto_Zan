@@ -49,8 +49,8 @@ export default function AboutMe() {
             className="text-center md:text-left bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-300"
           >
             <h3 className="font-gotosans text-3xl font-bold text-gray-800">
-              <span className="text-orange-300">Hi, I'm </span> Muhammad Ilham
-              Pauzan
+              <span className="text-orange-300">Hi, I&apos;m </span> Muhammad
+              Ilham Pauzan
             </h3>
 
             {/* Deskripsi Diri */}
@@ -71,7 +71,9 @@ export default function AboutMe() {
                 className="flex items-center gap-3 bg-gray-100 p-3 rounded-lg shadow-sm hover:shadow-md transition-all"
               >
                 <HiOutlineLocationMarker className="text-2xl text-orange-300" />
-                <p className="font-gotosans text-gray-800">Berdomisili di Kota Bogor</p>
+                <p className="font-gotosans text-gray-800">
+                  Berdomisili di Kota Bogor
+                </p>
               </motion.div>
 
               <motion.div
@@ -79,7 +81,9 @@ export default function AboutMe() {
                 className="flex items-center gap-3 bg-gray-100 p-3 rounded-lg shadow-sm hover:shadow-md transition-all"
               >
                 <HiOutlineBriefcase className="text-2xl text-orange-300" />
-                <p className="font-gotosans text-gray-800">Sedang magang di PT Bonet Utama</p>
+                <p className="font-gotosans text-gray-800">
+                  Sedang magang di PT Bonet Utama
+                </p>
               </motion.div>
 
               <motion.div
@@ -87,7 +91,9 @@ export default function AboutMe() {
                 className="flex items-center gap-3 bg-gray-100 p-3 rounded-lg shadow-sm hover:shadow-md transition-all"
               >
                 <HiOutlineMail className="text-2xl text-orange-300" />
-                <p className="font-gotosans text-gray-800">milhampauzan@gmail.com</p>
+                <p className="font-gotosans text-gray-800">
+                  milhampauzan@gmail.com
+                </p>
               </motion.div>
             </div>
 

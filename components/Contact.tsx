@@ -81,7 +81,7 @@ export default function Contact() {
             Contact Me
           </h2>
           <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
-            Let's discuss your next project!
+            Let&apos;s discuss your next project!
           </p>
         </motion.div>
 
