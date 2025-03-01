@@ -52,7 +52,7 @@ export default function AboutMe() {
               <span className="text-orange-300">Hi, I&apos;m </span> Muhammad
               Ilham Pauzan
             </h3>
-
+            
             {/* Deskripsi Diri */}
             <p className="font-gotosans mt-4 text-lg text-gray-700 leading-relaxed">
               Saya adalah siswa kelas 12 sekaligus programmer yang saat ini

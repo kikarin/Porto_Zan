@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { FaSearchPlus } from "react-icons/fa";
+import Image from "next/image";
 
 const certifications = [
   {
@@ -77,9 +78,11 @@ export default function Certifications() {
             >
               {/* Gambar dengan Overlay Icon */}
               <div className="relative w-44 h-20 mb-4 group-hover:scale-105 transition-transform">
-                <img
+                <Image
                   src={cert.logo}
                   alt={cert.title}
+                  width={176} // Sesuai dengan 44 * 4 (1rem = 4px)
+                  height={80} // Sesuai dengan 20 * 4
                   className="w-full h-full object-contain rounded-md"
                 />
                 {/* Overlay untuk tanda interaktif */}
@@ -88,7 +91,9 @@ export default function Certifications() {
                 </div>
               </div>
 
-              <h3 className="font-gotosans text-xl font-semibold mb-2">{cert.title}</h3>
+              <h3 className="font-gotosans text-xl font-semibold mb-2">
+                {cert.title}
+              </h3>
               <p className="font-gotosans text-gray-700 mb-1">{cert.issuer}</p>
               <p className="font-gotosans text-sm text-gray-500">{cert.date}</p>
             </motion.div>
