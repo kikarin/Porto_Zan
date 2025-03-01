@@ -1,9 +1,11 @@
+"use client";
+
 import ProjectDetail from "@/components/ProjectDetail";
 
-interface ProjectDetailPageProps {
+type Props = {
   params: { id: string };
-}
+};
 
-export default function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+export default function ProjectDetailPage({ params }: Props) {
   return <ProjectDetail projectId={params.id} />;
 }
