@@ -4,7 +4,7 @@ import "./globals.css";
 import Background from "@/components/Background";
 import Footer from "@/components/Footer";
 import Loader from "@/components/Loader";
-import SplashCursor from "@/components/SplashCursor";
+// import SplashCursor from "@/components/SplashCursor";
 import { useEffect, useState } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -19,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <body className="relative">
         <Background />
-        <SplashCursor />
+{/*         <SplashCursor /> */}
         {isLoading ? <Loader /> : children}
         <Footer />
       </body>
