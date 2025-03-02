@@ -100,13 +100,13 @@ export default function AboutMe() {
             {/* Tombol */}
             <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-4">
               <motion.a
-                href="/resume.pdf"
+                href="/Programmer_IlhamPauzan.pdf"
                 download
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="font-gotosans px-6 py-3 bg-orange-300 text-gray-900 rounded-lg font-medium shadow-md hover:bg-orange-200 transition-all"
               >
-                Download CV
+                Download Resume
               </motion.a>
               <motion.a
                 href="mailto:milhampauzan@gmail.com"
