@@ -59,7 +59,7 @@ const projects = [
     cta: {
       type: "download",
       label: "Unduh",
-      link: "#",
+      link: "/app-release.apk",
     },
     date: "2024-11",
   },
@@ -100,7 +100,7 @@ const projects = [
     techIcons: ["/js.webp"],
     cta: {
       type: "live",
-      label: "Live",
+      label: "github",
       link: "#",
     },
     date: "2023-08",
@@ -114,8 +114,8 @@ const projects = [
     techIcons: ["/laravel.png","/next.svg","/mysql.png"],
     cta: {
       type: "live",
-      label: "Live",
-      link: "#",
+      label: "github",
+      link: "https://github.com/kikarin/pelatihan-hotel-2022",
     },
     date: "2022-10",
   },
