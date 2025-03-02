@@ -59,7 +59,7 @@ const Footer = () => {
 
         {/* Copyright Text */}
         <p className="text-xs text-gray-400 dark:text-gray-500">
-          &copy; {new Date().getFullYear()} Your Name. All rights reserved.
+          &copy; {new Date().getFullYear()} Zankikarin. All rights reserved.
         </p>
 
         {/* Tombol Back to Top */}
