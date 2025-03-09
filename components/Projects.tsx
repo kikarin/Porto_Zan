@@ -253,7 +253,7 @@ export default function Projects() {
 
                 {/* Tech Icons Saat Hover */}
                 <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="flex gap-3 bg-black/60 p-3 rounded-lg">
+                  <div className="flex gap-3 bg-black/25 p-3 rounded-lg">
                     {project.techIcons.map((icon, i) => (
                       <Image
                         key={i}

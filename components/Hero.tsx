@@ -114,7 +114,7 @@ const Hero = () => {
             </span>
           </div>
           <div className="font-bold text-xl sm:text-2xl md:text-3xl">
-            10+ Projects
+            20+ Projects
           </div>
           <div className="text-md sm:text-lg md:text-xl">
             Delivered Successfully

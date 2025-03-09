@@ -132,13 +132,9 @@ export default function MyServices() {
                     {service.title}
                   </h3>
 
-                  {/* Button */}
-                  <button
-                    onClick={() =>
-                      (window.location.href = `/services/${service.title
-                        .replace(/\s+/g, "-")
-                        .toLowerCase()}`)
-                    }
+                  {/* Link Button */}
+                  <a
+                    href={`https://zan-stein.vercel.app/`}
                     className="font-gotosans flex items-center justify-center gap-2 px-4 py-2 bg-orange-300 text-gray-950 rounded-full hover:bg-orange-200 transition-all"
                   >
                     See More
@@ -156,7 +152,7 @@ export default function MyServices() {
                         d="M14 5l7 7m0 0l-7 7m7-7H3"
                       />
                     </svg>
-                  </button>
+                  </a>
                 </div>
               </motion.div>
             </Tilt>
