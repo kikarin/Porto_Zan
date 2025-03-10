@@ -7,7 +7,16 @@ import { useRouter } from "next/navigation";
 // Data Proyek
 const projects = [
   {
-    id: "1",
+    id: "9",
+    title: "ZanStein Solution",
+    description:
+"ZanStein Solution adalah platform digital yang mempermudah pelanggan dalam memesan layanan coding secara efisien. Dibangun menggunakan Next.js dan Firebase, website ini menawarkan performa tinggi dengan sistem autentikasi yang aman. Selain kemudahan dalam pemesanan, platform ini juga memiliki fitur Voucher Diskon yang memungkinkan pelanggan mendapatkan harga terbaik untuk layanan yang mereka butuhkan.Dengan UI yang modern dan responsif, serta alur pemesanan yang intuitif, ZanStein Solution memberikan pengalaman pengguna yang optimal dalam mencari dan memesan layanan coding berkualitas.",    
+img: "/zanstein.png",
+    techIcons: ["/next.svg", "/firebase.png","/tailwind.png"],
+    date: "2025-03",
+  },
+  {
+    id: "8",
     title: "Webview Pindai – Secure WebView for Attendance System",
     description:
       "Saya mengembangkan Webview Pindai menggunakan Flutter untuk mengakses sistem absensi berbasis PWA di PT Bonet Utama. saya juga menambahkan fitur keamanan untuk mendeteksi dan memblokir pengguna yang menggunakan Fake GPS atau perangkat yang telah di-root, memastikan keakuratan data absensi perusahaan.",
@@ -16,7 +25,7 @@ const projects = [
     date: "2025-02",
   },
   {
-    id: "2",
+    id: "7",
     title: "SageSolution Website",
     description:
       "Saya mengembangkan website profil perusahaan SageSolution sebagai bagian dari tugas saya di PT Bonet Utama. Website ini dirancang untuk menampilkan informasi bisnis dan layanan secara profesional serta responsif di berbagai perangkat. Dalam proyek ini, saya membangun frontend yang modern dan ringan, serta mengembangkan sistem CMS yang memungkinkan pengelolaan konten dengan mudah. Dengan struktur yang efisien dan teknologi yang tepat, website ini memberikan pengalaman pengguna yang optimal serta memperkuat citra profesional perusahaan.",
@@ -31,7 +40,7 @@ const projects = [
     date: "2025-02",
   },
   {
-    id: "3",
+    id: "6",
     title: "RTIK Website",
     description:
       "Sebagian dari tugas saya di PT Bonet Utama, saya mengembangkan website RTIK untuk menampilkan informasi komunitas Relawan TIK. Proyek ini menjadi pengalaman pertama saya dalam menggunakan Next.js, metode Repository Pattern, dan PostgreSQL, yang saya pelajari dan terapkan dengan cepat. Saya bertanggung jawab atas pengembangan frontend serta integrasi CMS untuk memastikan pengelolaan konten yang efisien dan pengalaman pengguna yang optimal.",
@@ -46,7 +55,7 @@ const projects = [
     date: "2025-01",
   },
   {
-    id: "4",
+    id: "5",
     title: "Aplikasi Payment",
     description:
       "Saya mengembangkan tampilan aplikasi payment menggunakan Flutter sebagai bagian dari pembelajaran di Dicoding. Proyek ini berfokus pada desain antarmuka yang responsif dan user-friendly. Hasil pekerjaan saya mendapatkan nilai bintang 5 dari Dicoding, sebagai bentuk apresiasi atas kualitas tampilan yang dibuat.",
@@ -55,7 +64,7 @@ const projects = [
     date: "2024-11",
   },
   {
-    id: "5",
+    id: "4",
     title: "Gallery Sekolah",
     description:
       "Saya mengerjakan proyek fullstack pertama saya dalam Uji Kompetensi Keahlian (Ujikom) dengan mengembangkan aplikasi mobile dan website yang mendukung multi-role dan multiplatform. Saya menggunakan Flutter untuk mobile serta Laravel untuk website dan API, dengan fitur CRUD yang dapat diakses di kedua platform mobile maupun website. Untuk API dan website, saat itu saya memanfaatkan server yang disediakan di sekolah untuk melakukan deploy ke Ubuntu Server dengan perantara FileZilla sebagai nilai tambah.",
@@ -71,7 +80,7 @@ const projects = [
     date: "2024-11",
   },
   {
-    id: "6",
+    id: "3",
     title: "Jasa Pembuatan Website Ujikom",
     description:
       "Sebagian dari pengalaman saya di bidang pengembangan web, saya membuka jasa pembuatan website untuk ujikom dengan teknologi Laravel. Saya telah menyelesaikan 18 proyek dengan sistem multi-role, memastikan setiap website dapat digunakan sesuai kebutuhan pengguna yang berbeda. Website yang saya kembangkan siap digunakan tanpa perlu pengaturan tambahan, sehingga peserta ujikom dapat fokus pada pemahaman konsep tanpa hambatan teknis. Dengan pengalaman menyelesaikan hampir 20 proyek, saya berkomitmen memberikan hasil yang berkualitas dan membantu peserta ujikom meraih nilai terbaik.",
@@ -84,7 +93,7 @@ const projects = [
     date: "2024-10",
   },
   {
-    id: "7",
+    id: "2",
     title: "Game Sederhana",
     description:
       "Sebagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
@@ -95,7 +104,7 @@ const projects = [
     date: "2023-08",
   },
   {
-    id: "8",
+    id: "1",
     title: "Website Hotel",
     description:
       "Sebagian dari pelatihan di PT Bonet Utama saat saya kelas 10, saya mengembangkan website hotel yang berfungsi sebagai sistem reservasi dan manajemen kamar. Proyek ini menggunakan Laravel sebagai backend API, Next.js sebagai frontend, serta MySQL sebagai database utama Pelatihan ini memberikan saya pengalaman langsung dalam membangun aplikasi fullstack serta integrasi antara frontend dan backend yang optimal.",
@@ -121,10 +130,11 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
     );
   }
 
-  // Navigasi prev dan next
-  const currentId = parseInt(projectId);
-  const prevId = currentId > 1 ? currentId - 1 : null;
-  const nextId = currentId < projects.length ? currentId + 1 : null;
+// Navigasi prev dan next (dibalik logikanya)
+const currentId = parseInt(projectId);
+const nextId = currentId > 1 ? currentId - 1 : null; // Next sekarang justru berkurang
+const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekarang bertambah
+
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-6 md:px-12 py-10 bg-gradient-to-br from-blue-50 to-gray-100 text-gray-900">

@@ -8,7 +8,21 @@ import Link from "next/link";
 // Data Proyek
 const projects = [
   {
-    id: "1",
+    id: "9",
+    title: "ZanStein Solution",
+    description:
+      "Platform jasa digital yang memudahkan pelanggan dalam melakukan pemesanan layanan coding secara efisien.",
+    img: "/zanstein.png",
+    techIcons: ["/next.svg", "/firebase.png"],
+    cta: {
+      type: "visit",
+      label: "Visit Web",
+      link: "",
+    },
+    date: "2025-03",
+  },
+  {
+    id: "8",
     title: "Webview Pindai",
     description:
       "Aplikasi Webview Flutter untuk absensi aman dan bebas manipulasi.",
@@ -22,7 +36,7 @@ const projects = [
     date: "2025-02",
   },
   {
-    id: "2",
+    id: "7",
     title: "SageSolution Website",
     description:
       "Platform digital perusahaan untuk menyajikan informasi bisnis dan layanan dengan tampilan modern dan responsif.",
@@ -36,7 +50,7 @@ const projects = [
     date: "2025-02",
   },
   {
-    id: "3",
+    id: "6",
     title: "RTIK Website",
     description:
       "Platform informasi Relawan TIK dengan tampilan modern dan navigasi intuitif untuk mempermudah akses informasi komunitas.",
@@ -50,7 +64,7 @@ const projects = [
     date: "2025-01",
   },
   {
-    id: "4",
+    id: "5",
     title: "Aplikasi Payment",
     description:
       "Desain antarmuka aplikasi pembayaran yang responsif dan user-friendly.",
@@ -64,7 +78,7 @@ const projects = [
     date: "2024-11",
   },
   {
-    id: "5",
+    id: "4",
     title: "Gallery Sekolah",
     description:
       "Aplikasi gallery sekolah berbasis mobile dan web dengan sistem multi-role dan multiplatform",
@@ -78,7 +92,7 @@ const projects = [
     date: "2024-11",
   },
   {
-    id: "6",
+    id: "3",
     title: "Jasa Pembuatan Website",
     description:
       "Menerima jasa pembuatan website ujikom dengan sistem multi-role. Dikerjakan secara profesional, siap pakai, dan membantu menyelesaikan proyek mereka dengan hasil terbaik.",
@@ -92,7 +106,7 @@ const projects = [
     date: "2024-10",
   },
   {
-    id: "7",
+    id: "2",
     title: "Game Sederhana",
     description:
       "Kumpulan game interaktif yang dibuat menggunakan JavaScript, menampilkan mekanisme sederhana untuk eksplorasi dan pengembangan keterampilan dalam pemrograman.",
@@ -106,7 +120,7 @@ const projects = [
     date: "2023-08",
   },
   {
-    id: "8",
+    id: "1",
     title: "Website Hotel",
     description:
       "Sistem manajemen hotel yang dibangun dengan API Laravel dan frontend Next.js, dirancang untuk memudahkan reservasi dan pengelolaan kamar secara efisien.",
@@ -147,17 +161,17 @@ const renderCTA = (cta: { type: string; label: string; link: string }) => {
           {cta.label}
         </a>
       );
-      case "github":
-        return (
-          <a
-            href={cta.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`${baseClass} bg-gray-900 text-gray-100 hover:bg-gray-800`}
-          >
-            {cta.label}
-          </a>
-        );
+    case "github":
+      return (
+        <a
+          href={cta.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${baseClass} bg-gray-900 text-gray-100 hover:bg-gray-800`}
+        >
+          {cta.label}
+        </a>
+      );
     case "private":
       return (
         <button
