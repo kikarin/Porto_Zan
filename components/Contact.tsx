@@ -67,7 +67,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-950 text-gray-100">
+    <section id="contact" className="py-20 bg-gray-900 text-gray-100">
       <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
         {/* Section Header */}
         <motion.div
@@ -77,8 +77,8 @@ export default function Contact() {
           transition={{ duration: 0.8, ease: "easeOut" }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-200 via-orange-300 to-orange-900 bg-clip-text text-transparent">
-            Contact Me
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
+          Contact Me
           </h2>
           <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
             Let&apos;s discuss your next project!
@@ -105,7 +105,7 @@ export default function Contact() {
               value={formData.name}
               onChange={handleChange}
               className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
-                errors.name ? "ring-red-500" : "focus:ring-orange-200"
+                errors.name ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Enter your name"
             />
@@ -125,7 +125,7 @@ export default function Contact() {
               value={formData.email}
               onChange={handleChange}
               className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
-                errors.email ? "ring-red-500" : "focus:ring-orange-200"
+                errors.email ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Enter your email"
             />
@@ -145,7 +145,7 @@ export default function Contact() {
               onChange={handleChange}
               rows={4}
               className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
-                errors.message ? "ring-red-500" : "focus:ring-orange-200"
+                errors.message ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Write your message (min. 10 characters)"
             />
@@ -161,7 +161,7 @@ export default function Contact() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="font-gotosans w-full py-3 bg-orange-300 text-gray-950 rounded-lg font-medium hover:bg-orange-200 transition-all"
+            className="font-gotosans w-full py-3 bg-gray-200 text-gray-950 rounded-lg font-medium hover:bg-gray-300 transition-all"
           >
             Send Message
           </motion.button>
@@ -190,25 +190,25 @@ export default function Contact() {
           <p>Or reach me directly:</p>
           <div className="flex flex-wrap justify-center gap-6 mt-4">
             <div className="flex items-center gap-2 text-lg">
-              <HiOutlineMail className="text-orange-300 text-2xl" />
+              <HiOutlineMail className="text-gray-400 text-2xl" />
               <a
                 href="mailto:milhampauzan@gmail.com"
-                className="text-white hover:text-orange-300 transition"
+                className="text-white hover:text-gray-400 transition"
               >
                 milhampauzan@gmail.com
               </a>
             </div>
             <div className="flex items-center gap-2 text-lg">
-              <HiOutlinePhone className="text-orange-300 text-2xl" />
+              <HiOutlinePhone className="text-gray-400 text-2xl" />
               <a
                 href="https://wa.me/6285693531495"
-                className="text-white hover:text-orange-300 transition"
+                className="text-white hover:text-gray-400 transition"
               >
                 +62 856-9353-1495
               </a>
             </div>
             <div className="flex items-center gap-2 text-lg">
-              <HiOutlineLocationMarker className="text-orange-300 text-2xl" />
+              <HiOutlineLocationMarker className="text-gray-400 text-2xl" />
               <p className="text-white">Kota Bogor, Indonesia</p>
             </div>
           </div>

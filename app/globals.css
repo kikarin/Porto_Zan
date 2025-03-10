@@ -151,8 +151,6 @@ body {
 }
 
 
-
-/* loader */
 /* Loader Hand */
 .hand-loader {
   --skin-color: #E4C560;
@@ -299,5 +297,40 @@ body {
   }
   40% {
     transform: rotate(50deg) scale(1);
+  }
+}
+
+
+/* SERTIFIKAT */
+.glass {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  transition: transform 0.3s ease-in-out;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.glass:hover {
+  transform: scale(1.05);
+}
+
+/* Animasi saat modal muncul */
+.modal-enter {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }

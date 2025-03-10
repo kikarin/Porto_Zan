@@ -1,9 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { useState } from "react";
-import { FaSearchPlus } from "react-icons/fa";
 import Image from "next/image";
+import { useState } from "react";
 
 const certifications = [
   {
@@ -35,18 +34,8 @@ const certifications = [
 export default function Certifications() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const openModal = (img: string) => {
-    setSelectedImage(img);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeModal = () => {
-    setSelectedImage(null);
-    document.body.style.overflow = "auto";
-  };
-
   return (
-    <section id="certifications" className="py-20 bg-gray-100 text-gray-900">
+    <section id="certifications" className="py-20 bg-gray-900 text-white">
       <div className="max-w-6xl mx-auto px-6 md:px-12">
         {/* Header */}
         <motion.div
@@ -56,16 +45,16 @@ export default function Certifications() {
           transition={{ duration: 0.7 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
             Certifications & Achievements
           </h2>
-          <p className="font-gotosans mt-4 text-gray-600 text-lg md:text-xl">
+          <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
             Proof of my skills and dedication to continuous learning.
           </p>
         </motion.div>
 
         {/* Certificate Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {certifications.map((cert, index) => (
             <motion.div
               key={index}
@@ -73,58 +62,57 @@ export default function Certifications() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.2, duration: 0.6 }}
-              className="bg-white rounded-xl shadow-lg hover:shadow-xl p-6 flex flex-col items-center text-center transition-all group cursor-pointer"
-              onClick={() => openModal(cert.logo)}
+              className="glass w-full max-w-xs mx-auto p-4 flex flex-col items-center justify-between text-center transition-transform hover:scale-105 backdrop-blur-md border border-white/20 shadow-lg"
             >
-              {/* Gambar dengan Overlay Icon */}
-              <div className="relative w-44 h-20 mb-4 group-hover:scale-105 transition-transform">
+              {/* Gambar Sertifikat */}
+              <div
+                className="relative w-36 h-24 mb-3 cursor-pointer transition-transform duration-300 hover:scale-110"
+                onClick={() => setSelectedImage(cert.logo)}
+              >
                 <Image
                   src={cert.logo}
                   alt={cert.title}
-                  width={176} // Sesuai dengan 44 * 4 (1rem = 4px)
-                  height={80} // Sesuai dengan 20 * 4
+                  width={144}
+                  height={96}
                   className="w-full h-full object-contain rounded-md"
                 />
-                {/* Overlay untuk tanda interaktif */}
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-md">
-                  <FaSearchPlus className="text-white text-3xl" />
-                </div>
               </div>
 
-              <h3 className="font-gotosans text-xl font-semibold mb-2">
-                {cert.title}
-              </h3>
-              <p className="font-gotosans text-gray-700 mb-1">{cert.issuer}</p>
-              <p className="font-gotosans text-sm text-gray-500">{cert.date}</p>
+              {/* Nama Sertifikat */}
+              <h3 className="text-lg font-semibold">{cert.title}</h3>
+              <p className="text-sm text-gray-300">{cert.issuer}</p>
+              <p className="text-xs text-gray-400">{cert.date}</p>
             </motion.div>
           ))}
         </div>
       </div>
 
-      {/* Modal for full image preview */}
+      {/* Modal Lightbox */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-          onClick={closeModal}
+          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+          onClick={() => setSelectedImage(null)}
         >
-          <motion.img
-            src={selectedImage}
-            alt="Full Certificate"
-            initial={{ scale: 0.5, opacity: 0 }}
+          <motion.div
+            initial={{ scale: 0.7, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.5, opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-full max-h-[90%] rounded-lg shadow-xl cursor-pointer"
-          />
-          <button
-            className="absolute top-4 right-4 text-white text-3xl font-bold bg-red-600 w-10 h-10 flex items-center justify-center rounded-full hover:bg-red-500"
-            onClick={(e) => {
-              e.stopPropagation();
-              closeModal();
-            }}
+            transition={{ duration: 0.3 }}
+            className="relative p-6 bg-white rounded-lg"
           >
-            ✖
-          </button>
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 text-black text-2xl font-bold"
+            >
+              ×
+            </button>
+            <Image
+              src={selectedImage}
+              alt="Certificate"
+              width={600}
+              height={400}
+              className="max-w-full h-auto rounded-lg"
+            />
+          </motion.div>
         </div>
       )}
     </section>

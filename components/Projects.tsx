@@ -41,7 +41,7 @@ const projects = [
     description:
       "Platform informasi Relawan TIK dengan tampilan modern dan navigasi intuitif untuk mempermudah akses informasi komunitas.",
     img: "/rtik_330.png",
-    techIcons: ["/laravel.png", "/next.svg", "/postgresql.svg","/golang.png"],
+    techIcons: ["/laravel.png", "/next.svg", "/postgresql.svg", "/golang.png"],
     cta: {
       type: "visit",
       label: "Visit Web",
@@ -69,9 +69,9 @@ const projects = [
     description:
       "Aplikasi gallery sekolah berbasis mobile dan web dengan sistem multi-role dan multiplatform",
     img: "/ujikom_330.png",
-    techIcons: ["/flutter.png","/laravel.png","/mysql.png"],
+    techIcons: ["/flutter.png", "/laravel.png", "/mysql.png"],
     cta: {
-      type: "live",
+      type: "github",
       label: "github",
       link: "https://github.com/kikarin",
     },
@@ -83,7 +83,7 @@ const projects = [
     description:
       "Menerima jasa pembuatan website ujikom dengan sistem multi-role. Dikerjakan secara profesional, siap pakai, dan membantu menyelesaikan proyek mereka dengan hasil terbaik.",
     img: "/jasa_ujikom_330.png",
-    techIcons: ["/laravel.png","/mysql.png"],
+    techIcons: ["/laravel.png", "/mysql.png"],
     cta: {
       type: "private",
       label: "private",
@@ -99,7 +99,7 @@ const projects = [
     img: "/game_330.png",
     techIcons: ["/js.webp"],
     cta: {
-      type: "live",
+      type: "github",
       label: "github",
       link: "#",
     },
@@ -111,9 +111,9 @@ const projects = [
     description:
       "Sistem manajemen hotel yang dibangun dengan API Laravel dan frontend Next.js, dirancang untuk memudahkan reservasi dan pengelolaan kamar secara efisien.",
     img: "/hotel.png",
-    techIcons: ["/laravel.png","/next.svg","/mysql.png"],
+    techIcons: ["/laravel.png", "/next.svg", "/mysql.png"],
     cta: {
-      type: "live",
+      type: "github",
       label: "github",
       link: "https://github.com/kikarin/pelatihan-hotel-2022",
     },
@@ -147,6 +147,17 @@ const renderCTA = (cta: { type: string; label: string; link: string }) => {
           {cta.label}
         </a>
       );
+      case "github":
+        return (
+          <a
+            href={cta.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`${baseClass} bg-gray-900 text-gray-100 hover:bg-gray-800`}
+          >
+            {cta.label}
+          </a>
+        );
     case "private":
       return (
         <button
@@ -183,7 +194,7 @@ const renderCTA = (cta: { type: string; label: string; link: string }) => {
 };
 
 export default function Projects() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [] = useState(null);
   return (
     <section id="projects" className="py-20 text-gray-900">
       <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
@@ -207,53 +218,23 @@ export default function Projects() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
-              className="relative rounded-xl overflow-hidden shadow-lg bg-white hover:shadow-2xl transition-all duration-300 group flex flex-col"
+              className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group flex flex-col bg-gradient-to-r from-gray-800 via-gray-900 to-gray-700"
             >
               {/* Gambar Project */}
-              <div
-                className="relative w-full h-64 overflow-hidden cursor-pointer"
-                onClick={() => setSelectedImage(project.img)}
-              >
+              <div className="relative w-full h-full cursor-pointer">
                 <Image
                   src={project.img}
                   alt={`Image for ${project.title}`}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="object-cover transition-transform duration-500 group-hover:scale-110"
                   priority
                   sizes="(max-width: 768px) 100vw, 800px"
                 />
-                <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                {/* Modal View Image */}
-                {selectedImage && (
-                  <div
-                    className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center cursor-zoom-out"
-                    onClick={() => setSelectedImage(null)}
-                  >
-                    <div
-                      className="relative p-4 max-w-[95vw] max-h-[90vh] flex items-center justify-center"
-                      onClick={(e) => e.stopPropagation()} // Mencegah event bubbling
-                    >
-                      <Image
-                        src={selectedImage}
-                        alt="Preview"
-                        width={1600}
-                        height={900}
-                        className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-xl"
-                      />
-                      <button
-                        onClick={() => setSelectedImage(null)}
-                        className="absolute top-4 right-4 text-3xl text-white bg-red-600 w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-700 transition-all"
-                      >
-                        ✖
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Tech Icons Saat Hover */}
-                <div className="absolute inset-0 flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="flex gap-3 bg-black/25 p-3 rounded-lg">
+                {/* Overlay dan Konten Hover */}
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-6 text-white text-center">
+                  {/* Tech Icons */}
+                  <div className="flex gap-3 mb-4">
                     {project.techIcons.map((icon, i) => (
                       <Image
                         key={i}
@@ -265,42 +246,27 @@ export default function Projects() {
                       />
                     ))}
                   </div>
-                </div>
-              </div>
 
-              {/* Konten Project */}
-              <div className="p-6 flex flex-col flex-grow">
-                <h3 className="font-gotosans text-2xl font-bold text-gray-900">
-                  {project.title}
-                </h3>
-
-                {/* Tanggal Proyek */}
-                <p className="text-sm text-gray-500 mt-1">
-                  📆{" "}
-                  {new Date(project.date).toLocaleDateString("id-ID", {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-
-                {/* Deskripsi Proyek */}
-                <div className="flex-grow">
-                  <p className="text-gray-800 font-gotosans mt-2">
+                  {/* Judul & Deskripsi */}
+                  <h3 className="text-2xl font-bold">{project.title}</h3>
+                  <p className="text-sm text-gray-300 mt-2">
                     {project.description}
                   </p>
-                </div>
 
-                {/* Tombol Dinamis */}
-                <div className="font-gotosans mt-4 flex gap-4">
-                  {renderCTA(project.cta)}
-                  {/* Ubah Link ke halaman dinamis */}
-                  <Link
-                    href={`/projects/${project.id}`}
-                    className="px-4 py-2 bg-gray-800 text-white rounded-full font-medium shadow-md hover:bg-gray-900 transition-all"
-                    prefetch={false}
-                  >
-                    See Details
-                  </Link>
+                  {/* Tombol Dinamis & See Details */}
+                  <div className="font-gotosans mt-4 flex gap-4 items-center">
+                    {/* Tombol Dinamis */}
+                    {renderCTA(project.cta)}
+
+                    {/* Tombol "See Details" */}
+                    <Link
+                      href={`/projects/${project.id}`}
+                      className="px-4 py-2 bg-white text-gray-900 rounded-full font-medium shadow-md hover:bg-gray-200 transition-all"
+                      prefetch={false}
+                    >
+                      See Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>

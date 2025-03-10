@@ -55,8 +55,8 @@ export default function MyServices() {
     >
       {/* Section Header */}
       <div id="services" className="text-center mb-12">
-        <h2 className="font-gotosans text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-200 via-orange-300 to-orange-900 bg-clip-text text-transparent">
-          My Services
+      <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
+      My Services
         </h2>
         <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
           Website, mobile application, and landing page creation services for

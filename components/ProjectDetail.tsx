@@ -65,7 +65,6 @@ const projects = [
       "/laravel.png",
       "/bootstrap.png",
       "/mysql.png",
-      "/postman.png",
       "/ubuntu.png",
       "/FileZilla.png",
     ],
@@ -91,7 +90,7 @@ const projects = [
       "Sebagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
     img: "/game.png",
     techIcons: [
-      "/js.png"
+      "/js.webp",
     ],
     date: "2023-08",
   },
