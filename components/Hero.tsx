@@ -2,12 +2,13 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState} from "react";
 import SplitText from "./SplitText";
 import TrueFocus from "./TrueFocus";
 
 const Hero = () => {
   const [isHovered, setIsHovered] = useState(false);
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
   const containerRef = useRef(null);
 
   return (
@@ -78,26 +79,27 @@ const Hero = () => {
               className="object-contain rounded-xl"
             />
 
-            {/* Hover Effect */}
-            <motion.div
-              className="absolute inset-0 flex justify-center"
-              onHoverStart={() => setIsHovered(true)}
-              onHoverEnd={() => setIsHovered(false)}
-              animate={{
-                opacity: isHovered ? 1 : 0,
-                scale: isHovered ? 1.05 : 1,
-                filter: isHovered ? "blur(0px)" : "blur(10px)",
-              }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
-            >
-              <Image
-                src="/asset.png"
-                alt="Profile Hover"
-                width={500}
-                height={500}
-                className="object-contain transition-transform duration-500 rounded-xl"
-              />
-            </motion.div>
+          {/* Hover & Click Effect */}
+          <motion.div
+            className="absolute inset-0 flex justify-center"
+            onHoverStart={() => !isMobile && setIsHovered(true)}
+            onHoverEnd={() => !isMobile && setIsHovered(false)}
+            onClick={() => isMobile && setIsHovered((prev) => !prev)} // Toggle di mobile
+            animate={{
+              opacity: isHovered ? 1 : 0,
+              scale: isHovered ? 1.05 : 1,
+              filter: isHovered ? "blur(0px)" : "blur(10px)",
+            }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+          >
+            <Image
+              src="/asset.png"
+              alt="Profile Hover"
+              width={500}
+              height={500}
+              className="object-contain transition-transform duration-500 rounded-xl"
+            />
+          </motion.div>
           </motion.div>
         </motion.div>
 

@@ -1,17 +1,22 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { FaInstagram, FaGithub, FaLinkedin,} from "react-icons/fa";
+import { FaInstagram, FaGithub, FaLinkedin, } from "react-icons/fa";
+import { useState } from "react";
 
 export default function ProfileCard() {
+  const [isTouched, setIsTouched] = useState(false);
   return (
     <div className="profile-container">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 1.015 }}
         transition={{ duration: 0.1, ease: "easeOut" }}
         className="profile-card"
+        onTouchStart={() => setIsTouched(true)}
+        onTouchEnd={() => setIsTouched(false)}
       >
         {/* Foto Profil */}
         <motion.div
@@ -22,7 +27,11 @@ export default function ProfileCard() {
             height: "100%",
             borderRadius: "10px",
           }}
-          animate={{ width: "100px", height: "100px", borderRadius: "50%" }}
+          animate={{
+            width: isTouched ? "100%" : "100px",
+            height: isTouched ? "100%" : "100px",
+            borderRadius: isTouched ? "10px" : "50%",
+          }}
           transition={{ duration: 0.5 }}
         >
           <div className="profile-img">

@@ -138,6 +138,19 @@ body {
   transform: scale(1.2);
 }
 
+/* Efek hover tetap diterapkan saat disentuh di mobile */
+.touched {
+  box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.5);
+  background-color: #FDBA74;
+}
+
+.touched .profile-img-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 10px !important;
+}
+
+
 
 /* loader */
 /* Loader Hand */
