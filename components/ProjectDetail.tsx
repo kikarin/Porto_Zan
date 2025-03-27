@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { IoSettingsOutline } from "react-icons/io5";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 // Data Proyek
 const projects = [
@@ -10,9 +12,9 @@ const projects = [
     id: "9",
     title: "ZanStein Solution",
     description:
-"ZanStein Solution adalah platform digital yang mempermudah pelanggan dalam memesan layanan coding secara efisien. Dibangun menggunakan Next.js dan Firebase, website ini menawarkan performa tinggi dengan sistem autentikasi yang aman. Selain kemudahan dalam pemesanan, platform ini juga memiliki fitur Voucher Diskon yang memungkinkan pelanggan mendapatkan harga terbaik untuk layanan yang mereka butuhkan.Dengan UI yang modern dan responsif, serta alur pemesanan yang intuitif, ZanStein Solution memberikan pengalaman pengguna yang optimal dalam mencari dan memesan layanan coding berkualitas.",    
-img: "/zanstein.png",
-    techIcons: ["/next.svg", "/firebase.png","/tailwind.png"],
+      "ZanStein Solution adalah platform digital yang mempermudah pelanggan dalam memesan layanan coding secara efisien. Dibangun menggunakan Next.js dan Firebase, website ini menawarkan performa tinggi dengan sistem autentikasi yang aman. Selain kemudahan dalam pemesanan, platform ini juga memiliki fitur Voucher Diskon yang memungkinkan pelanggan mendapatkan harga terbaik untuk layanan yang mereka butuhkan.Dengan UI yang modern dan responsif, serta alur pemesanan yang intuitif, ZanStein Solution memberikan pengalaman pengguna yang optimal dalam mencari dan memesan layanan coding berkualitas.",
+    img: "/zanstein.png",
+    techIcons: ["/next.svg", "/firebase.png", "/tailwind.png"],
     date: "2025-03",
   },
   {
@@ -85,11 +87,7 @@ img: "/zanstein.png",
     description:
       "Sebagian dari pengalaman saya di bidang pengembangan web, saya membuka jasa pembuatan website untuk ujikom dengan teknologi Laravel. Saya telah menyelesaikan 18 proyek dengan sistem multi-role, memastikan setiap website dapat digunakan sesuai kebutuhan pengguna yang berbeda. Website yang saya kembangkan siap digunakan tanpa perlu pengaturan tambahan, sehingga peserta ujikom dapat fokus pada pemahaman konsep tanpa hambatan teknis. Dengan pengalaman menyelesaikan hampir 20 proyek, saya berkomitmen memberikan hasil yang berkualitas dan membantu peserta ujikom meraih nilai terbaik.",
     img: "/jasa_ujikom.png",
-    techIcons: [
-      "/laravel.png",
-      "/bootstrap.png",
-      "/mysql.png",
-    ],
+    techIcons: ["/laravel.png", "/bootstrap.png", "/mysql.png"],
     date: "2024-10",
   },
   {
@@ -98,9 +96,7 @@ img: "/zanstein.png",
     description:
       "Sebagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
     img: "/game.png",
-    techIcons: [
-      "/js.webp",
-    ],
+    techIcons: ["/js.webp"],
     date: "2023-08",
   },
   {
@@ -109,14 +105,9 @@ img: "/zanstein.png",
     description:
       "Sebagian dari pelatihan di PT Bonet Utama saat saya kelas 10, saya mengembangkan website hotel yang berfungsi sebagai sistem reservasi dan manajemen kamar. Proyek ini menggunakan Laravel sebagai backend API, Next.js sebagai frontend, serta MySQL sebagai database utama Pelatihan ini memberikan saya pengalaman langsung dalam membangun aplikasi fullstack serta integrasi antara frontend dan backend yang optimal.",
     img: "/hotel.png",
-    techIcons: [
-      "/laravel.png",
-      "/bootstrap.png",
-      "/mysql.png",
-    ],
+    techIcons: ["/laravel.png", "/bootstrap.png", "/mysql.png"],
     date: "2022-10",
   },
-
 ];
 
 export default function ProjectDetail({ projectId }: { projectId: string }) {
@@ -130,11 +121,10 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
     );
   }
 
-// Navigasi prev dan next (dibalik logikanya)
-const currentId = parseInt(projectId);
-const nextId = currentId > 1 ? currentId - 1 : null; // Next sekarang justru berkurang
-const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekarang bertambah
-
+  // Navigasi prev dan next (dibalik logikanya)
+  const currentId = parseInt(projectId);
+  const nextId = currentId > 1 ? currentId - 1 : null; // Next sekarang justru berkurang
+  const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekarang bertambah
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-start px-6 md:px-12 py-10 bg-gradient-to-br from-blue-50 to-gray-100 text-gray-900">
@@ -169,8 +159,8 @@ const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekar
 
         {/* Tanggal Proyek */}
         <div className="mb-4">
-          <p className="text-gray-600 text-sm">
-            📅 Tanggal Proyek:{" "}
+          <p className="text-gray-600 text-sm flex items-center gap-2">
+          <FaRegCalendarAlt /> Tanggal Proyek:{" "}
             <span className="font-medium">
               {new Date(project.date).toLocaleDateString("id-ID", {
                 day: "numeric",
@@ -183,8 +173,9 @@ const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekar
 
         {/* Framework yang Digunakan */}
         <div className="mb-6">
-          <h3 className="font-gotosans text-2xl font-semibold mb-4">
-            ⚙️ technology used:
+          <h3 className="font-gotosans text-2xl font-semibold mb-4 flex items-center gap-2">
+            <IoSettingsOutline />
+            technology used:
           </h3>
           <div className="flex flex-wrap gap-6">
             {project.techIcons.map((icon, i) => (

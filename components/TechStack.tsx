@@ -30,6 +30,7 @@ const techStack = [
   { name: "Postman", img: "/postman.png", category: "API" },
   { name: "MySQL", img: "/mysql.png", category: "Database" },
   { name: "PostgreSQL", img: "/postgresql.svg", category: "Database" },
+  { name: "MariaDB", img: "/mariadb.svg", category: "Database" },
   { name: "Firebase", img: "/firebase.png", category: "Database" },
   { name: "GitHub", img: "/github.png", category: "Version Control" },
   { name: "GitLab", img: "/gitlab.png", category: "Version Control" },
