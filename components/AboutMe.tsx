@@ -6,11 +6,14 @@ import {
   HiOutlineBriefcase,
 } from "react-icons/hi";
 import ProfileCard from "./ProfileCard";
+import Container from "./Container";
+import { Parallax } from "react-scroll-parallax";
+
 
 export default function AboutMe() {
   return (
     <section id="about" className="py-2 mt-24 text-gray-900">
-      <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
+      <Container>
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -28,21 +31,23 @@ export default function AboutMe() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Kartu Profil */}
-          <motion.div
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-12 items-center text-center md:text-left">
+        <Parallax translateX={[-30, 40]}>
+        <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex justify-center"
+            className="flex justify-center md:justify-start"
           >
             <ProfileCard />
-          </motion.div>
+            </motion.div>
+        </Parallax>
 
           {/* Deskripsi & Informasi */}
+          <Parallax translateX={[10, -5]}>
           <motion.div
-            initial={{ opacity: 0, x: 50 }}
+            initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -52,9 +57,9 @@ export default function AboutMe() {
               <span className="text-orange-300">Hi, I&apos;m </span> Muhammad
               Ilham Pauzan
             </h3>
-            
+
             {/* Deskripsi Diri */}
-            <p className="font-gotosans mt-4 text-lg text-gray-700 leading-relaxed">
+            <p className="font-gotosans mt-4 text-lg text-gray-700 leading-relaxed text-justify md:text-left">
               Saya adalah siswa kelas 12 sekaligus programmer yang saat ini
               magang di PT Bonet Utama, sebuah perusahaan software house. Saya
               memiliki kemampuan belajar dan beradaptasi dengan cepat terhadap
@@ -118,8 +123,9 @@ export default function AboutMe() {
               </motion.a>
             </div>
           </motion.div>
+          </Parallax>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

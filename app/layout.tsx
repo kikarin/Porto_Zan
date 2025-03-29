@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import Loader from "@/components/Loader";
 // import SplashCursor from "@/components/SplashCursor";
 import { useEffect, useState } from "react";
+import ParallaxWrapper from "@/components/ParallaxWrapper";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
@@ -18,10 +19,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className="relative">
-        <Background />
-{/*         <SplashCursor /> */}
-        {isLoading ? <Loader /> : children}
-        <Footer />
+        <ParallaxWrapper>
+          <Background />
+          {/*         <SplashCursor /> */}
+          {isLoading ? <Loader /> : children}
+          <Footer />
+        </ParallaxWrapper>
       </body>
     </html>
   );

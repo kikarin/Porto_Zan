@@ -210,83 +210,78 @@ const renderCTA = (cta: { type: string; label: string; link: string }) => {
 export default function Projects() {
   const [] = useState(null);
   return (
-    <section id="projects" className="py-20 text-gray-900">
-      <div className="container mx-auto px-6 lg:px-12 max-w-6xl">
-        {/* Section Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 via-gray-900 to-gray-600 bg-clip-text text-transparent">
-            My Projects
-          </h2>
-          <p className="font-gotosans mt-4 text-gray-600 text-lg md:text-xl">
-            Here are some of the projects I’ve worked on.
-          </p>
-        </div>
+<section id="projects" className="py-20 text-gray-900">
+  <div className="container"> {/* Menggunakan container utama */}
+    {/* Section Header */}
+    <div className="text-center mb-12">
+      <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 via-gray-900 to-gray-600 bg-clip-text text-transparent">
+        My Projects
+      </h2>
+      <p className="font-gotosans mt-4 text-gray-600 text-lg md:text-xl">
+        Here are some of the projects I’ve worked on.
+      </p>
+    </div>
 
-        {/* Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              custom={index}
-              variants={cardVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.2 }}
-              className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group flex flex-col bg-gradient-to-r from-gray-800 via-gray-900 to-gray-700"
-            >
-              {/* Gambar Project */}
-              <div className="relative w-full h-full cursor-pointer">
-                <Image
-                  src={project.img}
-                  alt={`Image for ${project.title}`}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  priority
-                  sizes="(max-width: 768px) 100vw, 800px"
-                />
+    {/* Projects Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {projects.map((project, index) => (
+        <motion.div
+          key={project.id}
+          custom={index}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group flex flex-col bg-gradient-to-r from-gray-800 via-gray-900 to-gray-700"
+        >
+          {/* Gambar Project */}
+          <div className="relative w-full h-full cursor-pointer">
+            <Image
+              src={project.img}
+              alt={`Image for ${project.title}`}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              priority
+              sizes="(max-width: 768px) 100vw, 800px"
+            />
 
-                {/* Overlay dan Konten Hover */}
-                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-6 text-white text-center">
-                  {/* Tech Icons */}
-                  <div className="flex gap-3 mb-4">
-                    {project.techIcons.map((icon, i) => (
-                      <Image
-                        key={i}
-                        src={icon}
-                        alt={`Tech icon ${i + 1}`}
-                        width={40}
-                        height={40}
-                        className="object-contain"
-                      />
-                    ))}
-                  </div>
-
-                  {/* Judul & Deskripsi */}
-                  <h3 className="text-2xl font-bold">{project.title}</h3>
-                  <p className="text-sm text-gray-300 mt-2">
-                    {project.description}
-                  </p>
-
-                  {/* Tombol Dinamis & See Details */}
-                  <div className="font-gotosans mt-4 flex gap-4 items-center">
-                    {/* Tombol Dinamis */}
-                    {renderCTA(project.cta)}
-
-                    {/* Tombol "See Details" */}
-                    <Link
-                      href={`/projects/${project.id}`}
-                      className="px-4 py-2 bg-white text-gray-900 rounded-full font-medium shadow-md hover:bg-gray-200 transition-all"
-                      prefetch={false}
-                    >
-                      See Details
-                    </Link>
-                  </div>
-                </div>
+            {/* Overlay dan Konten Hover */}
+            <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-6 text-white text-center">
+              {/* Tech Icons */}
+              <div className="flex gap-3 mb-4">
+                {project.techIcons.map((icon, i) => (
+                  <Image
+                    key={i}
+                    src={icon}
+                    alt={`Tech icon ${i + 1}`}
+                    width={40}
+                    height={40}
+                    className="object-contain"
+                  />
+                ))}
               </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
+
+              {/* Judul & Deskripsi */}
+              <h3 className="text-2xl font-bold">{project.title}</h3>
+              <p className="text-sm text-gray-300 mt-2">{project.description}</p>
+
+              {/* Tombol Dinamis & See Details */}
+              <div className="font-gotosans mt-4 flex gap-4 items-center">
+                {renderCTA(project.cta)}
+                <Link
+                  href={`/projects/${project.id}`}
+                  className="px-4 py-2 bg-white text-gray-900 rounded-full font-medium shadow-md hover:bg-gray-200 transition-all"
+                  prefetch={false}
+                >
+                  See Details
+                </Link>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</section>
   );
 }

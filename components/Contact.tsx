@@ -6,6 +6,7 @@ import {
   HiOutlinePhone,
   HiOutlineLocationMarker,
 } from "react-icons/hi";
+import Container from "./Container";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -67,8 +68,8 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-900 text-gray-100">
-      <div className="container mx-auto px-6 lg:px-12 max-w-4xl">
+    <section id="contact" className="py-20 bg-gray-900 text-gray-100 mb-10 rounded-3xl">
+      <Container>
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 50 }}
@@ -78,7 +79,7 @@ export default function Contact() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
-          Contact Me
+            Contact Me
           </h2>
           <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
             Let&apos;s discuss your next project!
@@ -92,7 +93,7 @@ export default function Contact() {
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease: "easeOut" }}
           onSubmit={handleSubmit}
-          className="bg-gray-800 p-8 rounded-xl shadow-lg space-y-6"
+          className="bg-gray-800 p-8 rounded-xl shadow-lg space-y-6 max-w-2xl mx-auto"
         >
           {/* Input Nama */}
           <div>
@@ -213,7 +214,7 @@ export default function Contact() {
             </div>
           </div>
         </motion.div>
-      </div>
+      </Container>
     </section>
   );
 }

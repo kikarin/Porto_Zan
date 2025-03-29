@@ -65,8 +65,8 @@ export default function MyServices() {
       </div>
 
       {/* Service Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 px-6 md:px-12 max-w-6xl mx-auto relative">
-        {services.map((service, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
+      {services.map((service, index) => (
           <div key={index} className="relative group">
             {/* Background Asset */}
             <motion.img
