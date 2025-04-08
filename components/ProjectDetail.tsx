@@ -9,6 +9,15 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 // Data Proyek
 const projects = [
   {
+    id: "10",
+    title: "CMS SMK PUI Kota Bogor",
+    description:
+      "Memperbaiki backend CMS admin berbasis Laravel, menangani 12+ tabel CRUD yang bermasalah. Mengoptimalkan AJAX fetching untuk meningkatkan responsivitas, serta merapikan kode legacy (~700 baris per file) agar lebih stabil dan mudah dikelola.",
+    img: "/pui.png",
+    techIcons: ["/laravel.png", "/mariadb.png"],
+    date: "2025-03",
+  },
+  {
     id: "9",
     title: "ZanStein Solution",
     description:
@@ -163,7 +172,6 @@ export default function ProjectDetail({ projectId }: { projectId: string }) {
           <FaRegCalendarAlt /> Tanggal Proyek:{" "}
             <span className="font-medium">
               {new Date(project.date).toLocaleDateString("id-ID", {
-                day: "numeric",
                 month: "long",
                 year: "numeric",
               })}

@@ -8,6 +8,20 @@ import Link from "next/link";
 // Data Proyek
 const projects = [
   {
+    id: "10",
+    title: "CMS SMK PUI Kota Bogor",
+    description:
+      " Memperbaiki backend CMS admin berbasis Laravel.",
+    img: "/pui.png",
+    techIcons: ["/laravel.png", "/mariadb.png"],
+    cta: {
+      type: "private",
+      label: "Private",
+      link: "",
+    },
+    date: "2025-03",
+  },
+  {
     id: "9",
     title: "ZanStein Solution",
     description:
