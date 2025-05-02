@@ -44,10 +44,10 @@ export default function Certifications() {
           transition={{ duration: 0.7 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent">
+          <h2 className="font-rubik text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 bg-clip-text text-transparent">
             Certifications
           </h2>
-          <p className="font-gotosans mt-4 text-gray-600 text-lg md:text-xl">
+          <p className="font-rubik mt-4 text-gray-600 text-lg md:text-xl">
             Proof of my skills and dedication to continuous learning.
           </p>
         </motion.div>
@@ -79,8 +79,8 @@ export default function Certifications() {
 
               {/* Nama Sertifikat */}
               <h3 className="text-lg font-semibold">{cert.title}</h3>
-              <p className="text-sm text-gray-700">{cert.issuer}</p>
-              <p className="text-xs text-gray-600">{cert.date}</p>
+              <p className="font-rubik text-sm text-gray-700">{cert.issuer}</p>
+              <p className="font-rubik text-xs text-gray-600">{cert.date}</p>
             </motion.div>
           ))}
         </div>

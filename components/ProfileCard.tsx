@@ -49,7 +49,7 @@ export default function ProfileCard() {
 
         {/* Nama */}
         <motion.h2
-          className="font-gotosans profile-name"
+          className="font-rubik profile-name"
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}

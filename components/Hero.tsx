@@ -57,7 +57,7 @@ const Hero = () => {
           transition={{ duration: 1 }}
         >
           <Parallax speed={6}>
-          <p className="mt-4 text-base sm:text-lg md:text-xl text-gray-500 max-w-md">
+          <p className="font-rubik mt-4 text-base sm:text-lg md:text-xl text-gray-500 max-w-md">
             &quot;Membangun solusi digital inovatif dengan pendekatan
             kolaboratif. siap membantu bisnis Anda melalui pengembangan aplikasi
             berbasis web dan mobile yang responsif dan berkinerja tinggi.&quot;
@@ -126,7 +126,7 @@ const Hero = () => {
             <div className="font-bold text-xl sm:text-2xl md:text-3xl">
               20+ Projects
             </div>
-            <div className="text-md sm:text-lg md:text-xl">
+            <div className="font-rubik text-md sm:text-lg md:text-xl">
               Delivered Successfully
             </div>
           </Parallax>

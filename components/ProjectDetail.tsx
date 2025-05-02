@@ -1,274 +1,336 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IoSettingsOutline } from "react-icons/io5";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { IoMdClose } from "react-icons/io";
+import Container from "./Container";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-// Data Proyek
-const projects = [
-  {
-    id: "10",
-    title: "CMS SMK PUI Kota Bogor",
-    description:
-      "Memperbaiki backend CMS admin berbasis Laravel, menangani 12+ tabel CRUD yang bermasalah. Mengoptimalkan AJAX fetching untuk meningkatkan responsivitas, serta merapikan kode legacy (~700 baris per file) agar lebih stabil dan mudah dikelola.",
-    img: "/pui.png",
-    techIcons: ["/laravel.png", "/mariadb.png"],
-    date: "2025-03",
-  },
-  {
-    id: "9",
-    title: "ZanStein Solution",
-    description:
-      "ZanStein Solution adalah platform digital yang mempermudah pelanggan dalam memesan layanan coding secara efisien. Dibangun menggunakan Next.js dan Firebase, website ini menawarkan performa tinggi dengan sistem autentikasi yang aman. Selain kemudahan dalam pemesanan, platform ini juga memiliki fitur Voucher Diskon yang memungkinkan pelanggan mendapatkan harga terbaik untuk layanan yang mereka butuhkan.Dengan UI yang modern dan responsif, serta alur pemesanan yang intuitif, ZanStein Solution memberikan pengalaman pengguna yang optimal dalam mencari dan memesan layanan coding berkualitas.",
-    img: "/zanstein.png",
-    techIcons: ["/next.svg", "/firebase.png", "/tailwind.png"],
-    date: "2025-03",
-  },
-  {
-    id: "8",
-    title: "Webview Pindai – Secure WebView for Attendance System",
-    description:
-      "Saya mengembangkan Webview Pindai menggunakan Flutter untuk mengakses sistem absensi berbasis PWA di PT Bonet Utama. saya juga menambahkan fitur keamanan untuk mendeteksi dan memblokir pengguna yang menggunakan Fake GPS atau perangkat yang telah di-root, memastikan keakuratan data absensi perusahaan.",
-    img: "/pindai.png",
-    techIcons: ["/flutter.png"],
-    date: "2025-02",
-  },
-  {
-    id: "7",
-    title: "SageSolution Website",
-    description:
-      "Saya mengembangkan website profil perusahaan SageSolution sebagai bagian dari tugas saya di PT Bonet Utama. Website ini dirancang untuk menampilkan informasi bisnis dan layanan secara profesional serta responsif di berbagai perangkat. Dalam proyek ini, saya membangun frontend yang modern dan ringan, serta mengembangkan sistem CMS yang memungkinkan pengelolaan konten dengan mudah. Dengan struktur yang efisien dan teknologi yang tepat, website ini memberikan pengalaman pengguna yang optimal serta memperkuat citra profesional perusahaan.",
-    img: "/sage.png",
-    techIcons: [
-      "/next.svg",
-      "/tailwind.png",
-      "/laravel.png",
-      "/postgresql.svg",
-      "/golang.png",
-    ],
-    date: "2025-02",
-  },
-  {
-    id: "6",
-    title: "RTIK Website",
-    description:
-      "Sebagian dari tugas saya di PT Bonet Utama, saya mengembangkan website RTIK untuk menampilkan informasi komunitas Relawan TIK. Proyek ini menjadi pengalaman pertama saya dalam menggunakan Next.js, metode Repository Pattern, dan PostgreSQL, yang saya pelajari dan terapkan dengan cepat. Saya bertanggung jawab atas pengembangan frontend serta integrasi CMS untuk memastikan pengelolaan konten yang efisien dan pengalaman pengguna yang optimal.",
-    img: "/rtik.png",
-    techIcons: [
-      "/next.svg",
-      "/tailwind.png",
-      "/laravel.png",
-      "/postgresql.svg",
-      "/golang.png",
-    ],
-    date: "2025-01",
-  },
-  {
-    id: "5",
-    title: "Aplikasi Payment",
-    description:
-      "Saya mengembangkan tampilan aplikasi payment menggunakan Flutter sebagai bagian dari pembelajaran di Dicoding. Proyek ini berfokus pada desain antarmuka yang responsif dan user-friendly. Hasil pekerjaan saya mendapatkan nilai bintang 5 dari Dicoding, sebagai bentuk apresiasi atas kualitas tampilan yang dibuat.",
-    img: "/payment.png",
-    techIcons: ["/flutter.png"],
-    date: "2024-11",
-  },
-  {
-    id: "4",
-    title: "Gallery Sekolah",
-    description:
-      "Saya mengerjakan proyek fullstack pertama saya dalam Uji Kompetensi Keahlian (Ujikom) dengan mengembangkan aplikasi mobile dan website yang mendukung multi-role dan multiplatform. Saya menggunakan Flutter untuk mobile serta Laravel untuk website dan API, dengan fitur CRUD yang dapat diakses di kedua platform mobile maupun website. Untuk API dan website, saat itu saya memanfaatkan server yang disediakan di sekolah untuk melakukan deploy ke Ubuntu Server dengan perantara FileZilla sebagai nilai tambah.",
-    img: "/ujikom.png",
-    techIcons: [
-      "/flutter.png",
-      "/laravel.png",
-      "/bootstrap.png",
-      "/mysql.png",
-      "/ubuntu.png",
-      "/FileZilla.png",
-    ],
-    date: "2024-11",
-  },
-  {
-    id: "3",
-    title: "Jasa Pembuatan Website Ujikom",
-    description:
-      "Sebagian dari pengalaman saya di bidang pengembangan web, saya membuka jasa pembuatan website untuk ujikom dengan teknologi Laravel. Saya telah menyelesaikan 18 proyek dengan sistem multi-role, memastikan setiap website dapat digunakan sesuai kebutuhan pengguna yang berbeda. Website yang saya kembangkan siap digunakan tanpa perlu pengaturan tambahan, sehingga peserta ujikom dapat fokus pada pemahaman konsep tanpa hambatan teknis. Dengan pengalaman menyelesaikan hampir 20 proyek, saya berkomitmen memberikan hasil yang berkualitas dan membantu peserta ujikom meraih nilai terbaik.",
-    img: "/jasa_ujikom.png",
-    techIcons: ["/laravel.png", "/bootstrap.png", "/mysql.png"],
-    date: "2024-10",
-  },
-  {
-    id: "2",
-    title: "Game Sederhana",
-    description:
-      "Sebagian dari eksplorasi saya dalam pengembangan web interaktif, saya telah membuat beberapa game sederhana menggunakan JavaScript. Proyek ini bertujuan untuk memperdalam pemahaman tentang logika pemrograman, manipulasi DOM, serta animasi berbasis JavaScript.",
-    img: "/game.png",
-    techIcons: ["/js.webp"],
-    date: "2023-08",
-  },
-  {
-    id: "1",
-    title: "Website Hotel",
-    description:
-      "Sebagian dari pelatihan di PT Bonet Utama saat saya kelas 10, saya mengembangkan website hotel yang berfungsi sebagai sistem reservasi dan manajemen kamar. Proyek ini menggunakan Laravel sebagai backend API, Next.js sebagai frontend, serta MySQL sebagai database utama Pelatihan ini memberikan saya pengalaman langsung dalam membangun aplikasi fullstack serta integrasi antara frontend dan backend yang optimal.",
-    img: "/hotel.png",
-    techIcons: ["/laravel.png", "/bootstrap.png", "/mysql.png"],
-    date: "2022-10",
-  },
-];
-
-export default function ProjectDetail({ projectId }: { projectId: string }) {
+export default function ProjectDetail({
+  projectDetail,
+}: {
+  projectDetail: any;
+}) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImg, setModalImg] = useState<string | null>(null);
+  const [allIds, setAllIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [scale, setScale] = useState(1);
+  const [isDragging, setIsDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+  
 
-  const project = projects.find((p) => p.id === projectId);
-  if (!project) {
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    let newScale = scale - e.deltaY * 0.001;
+    newScale = Math.min(Math.max(newScale, 1), 3); // zoom min 1x max 3x
+    setScale(newScale);
+  };
+
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(true);
+    setLastPosition({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - lastPosition.x,
+      y: e.clientY - lastPosition.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  const handleMouseLeave = () => {
+    setIsDragging(false);
+  };
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    const touch = e.touches[0];
+    setLastPosition({
+      x: touch.clientX - position.x,
+      y: touch.clientY - position.y,
+    });
+  };
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    const touch = e.touches[0];
+    setPosition({
+      x: touch.clientX - lastPosition.x,
+      y: touch.clientY - lastPosition.y,
+    });
+  };
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+  const handleTouchCancel = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    async function fetchOrderedProjectIds() {
+      try {
+        const q = query(
+          collection(db, "projectDetails"),
+          orderBy("createdAt", "desc")
+        );
+        const snap = await getDocs(q);
+        const ids = snap.docs
+          .map((doc) => doc.data().projectId)
+          .filter(
+            (id): id is string => typeof id === "string" && id.length > 0
+          );
+        setAllIds(ids);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal mengambil urutan detail proyek");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchOrderedProjectIds();
+  }, []);
+
+  if (loading) return <div className="text-center py-20">Loading...</div>;
+  if (error || !projectDetail)
     return (
-      <div className="text-center text-red-600">Proyek tidak ditemukan.</div>
+      <div className="text-center text-red-600 py-20">
+        {error || "Proyek tidak ditemukan."}
+      </div>
     );
-  }
+  const currentIndex = allIds.indexOf(projectDetail.projectId);
+  const nextId =
+    currentIndex < allIds.length - 1 ? allIds[currentIndex + 1] : null;
+  const prevId = currentIndex > 0 ? allIds[currentIndex - 1] : null;
 
-  // Navigasi prev dan next (dibalik logikanya)
-  const currentId = parseInt(projectId);
-  const nextId = currentId > 1 ? currentId - 1 : null; // Next sekarang justru berkurang
-  const prevId = currentId < projects.length ? currentId + 1 : null; // Prev sekarang bertambah
+  const openModal = (img: string) => {
+    setModalImg(img);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalImg(null);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start px-6 md:px-12 py-10 bg-gradient-to-br from-blue-50 to-gray-100 text-gray-900">
-      {/* Gambar Proyek */}
-      <div
-        className="relative w-full max-w-4xl cursor-pointer group mb-12 rounded-2xl overflow-hidden shadow-2xl border border-gray-300 hover:scale-[1.05] transition-transform duration-700"
-        onClick={() => setIsModalOpen(true)}
-      >
-        <Image
-          src={project.img}
-          alt={project.title}
-          width={1600}
-          height={800}
-          className="w-full h-80 object-cover transition-transform duration-700 group-hover:scale-110"
-        />
-        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-700">
-          <span className="text-white font-bold text-2xl drop-shadow-md animate-pulse">
-            🔍 Klik untuk memperbesar
-          </span>
-        </div>
-      </div>
-
-      {/* Deskripsi Singkat */}
-      <div className="max-w-4xl text-left bg-white p-10 rounded-xl shadow-xl border border-gray-300 hover:shadow-2xl transition-shadow duration-500">
-        <h1 className="text-3xl font-extrabold mb-6 text-gray-900 tracking-tight">
-          {project.title}
-        </h1>
-
-        <p className="font-gotosans text-lg text-gray-700 mb-5 leading-relaxed">
-          {project.description}
-        </p>
-
-        {/* Tanggal Proyek */}
-        <div className="mb-4">
-          <p className="text-gray-600 text-sm flex items-center gap-2">
-          <FaRegCalendarAlt /> Tanggal Proyek:{" "}
-            <span className="font-medium">
-              {new Date(project.date).toLocaleDateString("id-ID", {
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-          </p>
-        </div>
-
-        {/* Framework yang Digunakan */}
-        <div className="mb-6">
-          <h3 className="font-gotosans text-2xl font-semibold mb-4 flex items-center gap-2">
-            <IoSettingsOutline />
-            technology used:
-          </h3>
-          <div className="flex flex-wrap gap-6">
-            {project.techIcons.map((icon, i) => (
-              <div
-                key={i}
-                className="flex flex-col items-center justify-center p-6 bg-gray-100 rounded-xl shadow-md hover:scale-105 hover:bg-gray-200 transition-transform duration-500"
-              >
-                <Image
-                  src={icon}
-                  alt={`Tech icon ${i + 1}`}
-                  width={60}
-                  height={60}
-                  className="object-contain"
-                />
-              </div>
-            ))}
+    <div className="font-rubik min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-8">
+      <Container>
+        {/* Image Gallery */}
+        {Array.isArray(projectDetail.images) &&
+        projectDetail.images.length > 0 ? (
+          <div className="w-full flex justify-center mb-8 pb-4">
+            <div className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide px-2">
+              {projectDetail.images.map((img: string, idx: number) => (
+                <div
+                  key={idx}
+                  className="relative flex-shrink-0 rounded-2xl overflow-hidden shadow-lg border border-gray-300 cursor-pointer group transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
+                  style={{
+                    width: 300,
+                    height: 200,
+                    minWidth: 220,
+                    background: "#f3f4f6",
+                  }}
+                  onClick={() => openModal(img)}
+                >
+                  <Image
+                    src={img}
+                    alt={projectDetail.title}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    className="transition-transform duration-500 group-hover:scale-110"
+                    sizes="(max-width: 768px) 80vw, 320px"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="text-center text-gray-400 mb-8">
+            No images available.
+          </div>
+        )}
 
-        {/* Tombol Prev dan Next di dalam border */}
-        <div className="flex justify-between mt-6 border-t pt-6">
-          {/* Tombol Prev */}
-          <button
-            onClick={() => prevId && router.push(`/projects/${prevId}`)}
-            disabled={!prevId}
-            className={`px-6 py-3 rounded-lg font-medium shadow-md transition-all duration-500 ${
-              prevId
-                ? "bg-gray-700 text-white hover:scale-110 hover:bg-blue-800"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            ← Prev
-          </button>
-
-          {/* Tombol Next */}
-          <button
-            onClick={() => nextId && router.push(`/projects/${nextId}`)}
-            disabled={!nextId}
-            className={`px-6 py-3 rounded-lg font-medium shadow-md transition-all duration-500 ${
-              nextId
-                ? "bg-blue-600 text-white hover:scale-110 hover:bg-blue-700"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
-            }`}
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-
-      {/* Tombol Kembali ke Halaman Utama */}
-      <button
-        onClick={() => (window.location.href = "/")}
-        className="font-gotosans mt-6 px-6 py-3 bg-gray-900 text-white font-medium rounded-lg shadow-lg hover:scale-110 hover:bg-blue-800 transition-all duration-500"
-      >
-        ← Kembali ke Halaman Utama
-      </button>
-
-      {/* Modal untuk Full-Image View */}
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center cursor-zoom-out animate-fadeIn transition-all duration-500"
-          onClick={() => setIsModalOpen(false)}
-        >
-          {/* Wrapper Modal untuk menangani event bubbling */}
-          <div
-            className="relative p-4 max-w-[95vw] max-h-[90vh] flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()} // Mencegah event bubbling
-          >
-            <Image
-              src={project.img}
-              alt={project.title}
-              width={1600}
-              height={900}
-              className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-xl scale-95 hover:scale-100 transition-transform duration-500"
-            />
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute top-4 right-4 text-3xl text-white bg-red-600 w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-700 hover:rotate-90 transition-all duration-500"
-              aria-label="Tutup"
+        {/* Zoom Modal */}
+        <AnimatePresence>
+          {isModalOpen && modalImg && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-90 p-4"
+              onClick={closeModal}
             >
-              ✖
-            </button>
+              <motion.div
+                initial={{ scale: 0.9 }}
+                animate={{ scale: 1 }}
+                exit={{ scale: 0.9 }}
+                className="relative w-full h-full max-w-7xl mx-auto overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  className="w-full h-full cursor-grab active:cursor-grabbing"
+                  style={{
+                    transform: `scale(${scale}) translate(${
+                      position.x / scale
+                    }px, ${position.y / scale}px)`,
+                    transformOrigin: "center center",
+                    transition: isDragging ? "none" : "transform 0.3s ease",
+                  }}
+                  onWheel={handleWheel}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onTouchCancel={handleTouchCancel}
+                >
+                  <Image
+                    src={modalImg}
+                    alt="Zoomed"
+                    fill
+                    priority
+                    className="object-contain rounded-lg select-none"
+                    draggable={false}
+                  />
+                </div>
+
+                <button
+                  onClick={closeModal}
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/80 text-gray-800 hover:bg-white transition"
+                >
+                  <IoMdClose size={30} />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Project Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="bg-white rounded-xl shadow-2xl p-6 md:p-10 max-w-5xl mx-auto"
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+            {projectDetail.category && (
+              <span className="px-4 py-2 bg-orange-400 text-white rounded-full text-sm font-semibold">
+                {projectDetail.category}
+              </span>
+            )}
+            <span className="flex items-center gap-2 text-sm text-gray-500">
+              <FaRegCalendarAlt />{" "}
+              <span>
+                {new Date(projectDetail.date).toLocaleDateString("id-ID", {
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </span>
           </div>
-        </div>
-      )}
+
+          <h1 className="text-3xl md:text-5xl font-extrabold mb-6 text-gray-900 leading-tight">
+            {projectDetail.title}
+          </h1>
+
+          <p className="text-gray-700 text-base md:text-lg leading-relaxed break-words mb-8 whitespace-pre-wrap">
+            {projectDetail.desc}
+          </p>
+
+          {/* Tech Used */}
+          {Array.isArray(projectDetail.techIcons) && (
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3">
+                <IoSettingsOutline /> Technology Used
+              </h3>
+              <div className="flex flex-wrap gap-6">
+                {projectDetail.techIcons.map((icon: string, idx: number) => (
+                  <motion.div
+                    key={idx}
+                    whileHover={{ scale: 1.1 }}
+                    className="p-4 rounded-xl shadow-md bg-gray-100 hover:bg-gray-200 transition-all duration-300 flex items-center justify-center"
+                  >
+                    <Image
+                      src={icon}
+                      alt={`Tech Icon ${idx}`}
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-10 border-t pt-6">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={!prevId}
+              onClick={() => prevId && router.push(`/projects/${prevId}`)}
+              className={`flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all ${
+                prevId
+                  ? "bg-gray-800 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              ← Previous
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              disabled={!nextId}
+              onClick={() => nextId && router.push(`/projects/${nextId}`)}
+              className={`flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all ${
+                nextId
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+            >
+              Next →
+            </motion.button>
+          </div>
+
+          {/* Back to Home */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => router.push("/")}
+            className="mt-8 flex items-center justify-center gap-3 w-full px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition-all"
+          >
+            <IoMdClose size={20} /> Kembali ke Halaman Utama
+          </motion.button>
+        </motion.div>
+      </Container>
     </div>
   );
 }

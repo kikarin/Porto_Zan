@@ -64,7 +64,7 @@ export default function Navbar() {
             duration={500}
             spy={true}
             offset={-70}
-            className="text-gray-800 text-lg font-medium cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-200 transition-all"
+            className="font-rubik text-gray-800 text-lg font-medium cursor-pointer px-4 py-2 rounded-lg hover:bg-gray-200 transition-all"
           >
             {item.label}
           </ScrollLink>
@@ -107,7 +107,7 @@ export default function Navbar() {
                   duration={500}
                   spy={true}
                   offset={-70}
-                  className="text-gray-800 text-lg font-medium py-2 hover:text-indigo-600 transition"
+                  className="font-rubik text-gray-800 text-lg font-medium py-2 hover:text-indigo-600 transition"
                   onClick={() => setMenuOpen(false)}
                 >
                   {item.label}

@@ -19,7 +19,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="font-gotosans p-10 bg-gray-100 dark:bg-gray-900 dark:text-white relative">
+    <footer className="font-rubik p-10 bg-gray-100 dark:bg-gray-900 dark:text-white relative">
       <div className="max-w-5xl mx-auto text-center flex flex-col items-center gap-5">
         {/* Garis pemisah dengan efek subtle */}
         <div className="w-full border-t border-gray-300 dark:border-gray-700 opacity-50"></div>

@@ -28,7 +28,7 @@ module.exports = {
           '"Segoe UI Symbol"',
           '"Noto Color Emoji"',
         ],
-
+        rubik: ['Rubik', 'sans-serif'],
       },
     },
   },

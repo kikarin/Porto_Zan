@@ -55,10 +55,10 @@ export default function MyServices() {
     >
       {/* Section Header */}
       <div id="services" className="text-center mb-12">
-      <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
+      <h2 className="font-rubik text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
       My Services
         </h2>
-        <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
+        <p className="font-rubik mt-4 text-gray-400 text-lg md:text-xl">
           Website, mobile application, and landing page creation services for
           your business and assignment needs.
         </p>
@@ -128,14 +128,14 @@ export default function MyServices() {
                 {/* Overlay Content */}
                 <div className="flex flex-col items-center justify-end px-6 pb-6 pt-16 z-10 h-64">
                   {/* Title */}
-                  <h3 className="font-gotosans text-xl font-bold text-white mb-4 mt-6">
+                  <h3 className=" text-xl font-bold text-white mb-4 mt-6">
                     {service.title}
                   </h3>
 
                   {/* Link Button */}
                   <a
                     href={`https://zan-stein.vercel.app/`}
-                    className="font-gotosans flex items-center justify-center gap-2 px-4 py-2 bg-orange-300 text-gray-950 rounded-full hover:bg-orange-200 transition-all"
+                    className="font-rubik flex items-center justify-center gap-2 px-4 py-2 bg-orange-300 text-gray-950 rounded-full hover:bg-orange-200 transition-all"
                   >
                     See More
                     <svg

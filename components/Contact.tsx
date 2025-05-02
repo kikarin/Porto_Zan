@@ -68,7 +68,7 @@ export default function Contact() {
   };
 
   return (
-    <section id="contact" className="py-20 bg-gray-900 text-gray-100 mb-10 rounded-3xl">
+    <section id="contact" className="py-20 bg-gray-900 text-gray-100 mb-10 rounded-3xl font-rubik">
       <Container>
         {/* Section Header */}
         <motion.div
@@ -79,9 +79,9 @@ export default function Contact() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
-            Contact Me
+          Contact Me
           </h2>
-          <p className="font-gotosans mt-4 text-gray-400 text-lg md:text-xl">
+          <p className="font-rubik mt-4 text-gray-400 text-lg md:text-xl">
             Let&apos;s discuss your next project!
           </p>
         </motion.div>
@@ -97,7 +97,7 @@ export default function Contact() {
         >
           {/* Input Nama */}
           <div>
-            <label className="font-gotosans block text-gray-300 text-lg font-medium mb-2">
+            <label className="font-rubik block text-gray-300 text-lg font-medium mb-2">
               Name
             </label>
             <input
@@ -105,7 +105,7 @@ export default function Contact() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
+              className={`font-rubik w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
                 errors.name ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Enter your name"
@@ -117,7 +117,7 @@ export default function Contact() {
 
           {/* Input Email */}
           <div>
-            <label className="font-gotosans block text-gray-300 text-lg font-medium mb-2">
+            <label className="font-rubik block text-gray-300 text-lg font-medium mb-2">
               Email
             </label>
             <input
@@ -125,7 +125,7 @@ export default function Contact() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
+              className={`font-rubik w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
                 errors.email ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Enter your email"
@@ -137,7 +137,7 @@ export default function Contact() {
 
           {/* Input Pesan */}
           <div>
-            <label className="font-gotosans block text-gray-300 text-lg font-medium mb-2">
+            <label className="font-rubik block text-gray-300 text-lg font-medium mb-2">
               Message
             </label>
             <textarea
@@ -145,7 +145,7 @@ export default function Contact() {
               value={formData.message}
               onChange={handleChange}
               rows={4}
-              className={`font-gotosans w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
+              className={`font-rubik w-full p-3 rounded-lg bg-gray-700 text-white focus:ring-2 ${
                 errors.message ? "ring-red-500" : "focus:ring-orange-100"
               } outline-none`}
               placeholder="Write your message (min. 10 characters)"
@@ -162,7 +162,7 @@ export default function Contact() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             type="submit"
-            className="font-gotosans w-full py-3 bg-gray-200 text-gray-950 rounded-lg font-medium hover:bg-gray-300 transition-all"
+            className="font-rubik w-full py-3 bg-gray-200 text-gray-950 rounded-lg font-medium hover:bg-gray-300 transition-all"
           >
             Send Message
           </motion.button>
@@ -173,7 +173,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="font-gotosans text-center mt-4 text-green-400 text-lg"
+              className="font-rubik text-center mt-4 text-green-400 text-lg"
             >
               ✅ Your message has been sent successfully!
             </motion.div>
@@ -186,7 +186,7 @@ export default function Contact() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-          className="font-gotosans mt-8 text-center text-gray-400 space-y-3"
+          className="font-rubik mt-8 text-center text-gray-400 space-y-3"
         >
           <p>Or reach me directly:</p>
           <div className="flex flex-wrap justify-center gap-6 mt-4">
