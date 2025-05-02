@@ -118,7 +118,6 @@ export default function Projects() {
     }
     fetchProjects();
   }, []);
-  
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (error)
@@ -139,7 +138,7 @@ export default function Projects() {
             My Projects
           </h2>
           <p className="font-rubik mt-4 text-gray-600 text-lg md:text-xl">
-            Here are some of the projects I've worked on.
+            Here are some of the projects I&rsquo;ve worked on.
           </p>
         </motion.div>
 
