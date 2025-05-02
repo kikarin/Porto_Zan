@@ -7,16 +7,7 @@ import Link from "next/link";
 import Container from "./Container";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-
-// Animasi untuk card proyek
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: "easeOut" },
-  }),
-};
+import type { Project } from "../lib/projectService";
 
 // Fungsi untuk menampilkan CTA secara dinamis
 const renderCTA = (cta: { type: string; label: string; link: string }) => {
@@ -81,7 +72,7 @@ const renderCTA = (cta: { type: string; label: string; link: string }) => {
 };
 
 export default function Projects() {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -102,10 +93,18 @@ export default function Projects() {
           orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+        const data = querySnapshot.docs.map((doc) => {
+          const docData = doc.data();
+          return {
+            id: doc.id,
+            title: docData.title || "",
+            description: docData.description || "",
+            img: docData.img || "",
+            techIcons: docData.techIcons || [],
+            category: docData.category || "",
+            cta: docData.cta || { type: "", label: "", link: "" },
+          } as Project;
+        });
         setProjects(data);
       } catch (err) {
         if (err instanceof Error) {
