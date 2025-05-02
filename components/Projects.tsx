@@ -107,14 +107,19 @@ export default function Projects() {
           ...doc.data(),
         }));
         setProjects(data);
-      } catch (err: any) {
-        setError("Gagal mengambil data proyek");
+      } catch (err) {
+        if (err instanceof Error) {
+          setError("Gagal mengambil data proyek: " + err.message);
+        } else {
+          setError("Gagal mengambil data proyek");
+        }
       } finally {
         setLoading(false);
       }
     }
     fetchProjects();
   }, []);
+  
 
   if (loading) return <div className="text-center py-20">Loading...</div>;
   if (error)

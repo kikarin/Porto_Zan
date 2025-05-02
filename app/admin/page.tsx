@@ -9,6 +9,7 @@ import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Project, getAllProjects, deleteProject } from '@/lib/projectService';
 import Container from '@/components/Container';
 import Cookies from 'js-cookie';
+import { FirebaseError } from "firebase/app";
 
 export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -45,46 +46,48 @@ export default function AdminDashboard() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+  
     try {
-      // Validasi input
       if (!email || !password) {
         throw new Error('Please enter both email and password');
       }
-
+  
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      
-      // Simpan session di cookie
-      Cookies.set('session', user.uid, { expires: 7 }); // Expires in 7 days
-      
+  
+      Cookies.set('session', user.uid, { expires: 7 });
+  
       setIsLoggedIn(true);
       fetchProjects();
-    } catch (error: any) {
-      console.error('Login error:', error);
-      
-      // Handle specific Firebase error codes
-      switch (error.code) {
-        case 'auth/invalid-credential':
-          setError('Invalid email or password. Please try again.');
-          break;
-        case 'auth/user-not-found':
-          setError('No account found with this email.');
-          break;
-        case 'auth/wrong-password':
-          setError('Incorrect password.');
-          break;
-        case 'auth/too-many-requests':
-          setError('Too many failed login attempts. Please try again later.');
-          break;
-        default:
-          setError('An error occurred during login. Please try again.');
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        console.error('Login error:', error.code);
+  
+        switch (error.code) {
+          case 'auth/invalid-credential':
+            setError('Invalid email or password. Please try again.');
+            break;
+          case 'auth/user-not-found':
+            setError('No account found with this email.');
+            break;
+          case 'auth/wrong-password':
+            setError('Incorrect password.');
+            break;
+          case 'auth/too-many-requests':
+            setError('Too many failed login attempts. Please try again later.');
+            break;
+          default:
+            setError('An error occurred during login. Please try again.');
+        }
+      } else if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred.');
       }
     } finally {
       setLoading(false);
     }
   };
-
   const handleLogout = async () => {
     try {
       await signOut(auth);

@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '@/lib/firebase';
 import { uploadImageToCloudinary } from '@/lib/uploadImage';
 import { Project, getProject, createProject, updateProject } from '@/lib/projectService';
 import Container from '@/components/Container';
@@ -289,7 +287,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                             alt={`Tech icon ${index + 1}`}
                             fill
                             className="object-contain p-2"
-                            onError={(e) => {
+                            onError={() => {
                               // Handle error
                               setProject(prev => ({
                                 ...prev,

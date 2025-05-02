@@ -36,7 +36,20 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
   const q = query(collection(db, "projectDetails"), where("projectId", "==", params.id));
   const detailSnap = await getDocs(q);
-  const detail = detailSnap.empty ? null : { id: detailSnap.docs[0].id, ...detailSnap.docs[0].data() };
-
+  const detail = detailSnap.empty ? null : (() => {
+    const raw = detailSnap.docs[0].data();
+    return {
+      id: detailSnap.docs[0].id,
+      projectId: raw.projectId,
+      title: raw.title,
+      desc: raw.desc,
+      images: raw.images,
+      techIcons: raw.techIcons,
+      date: raw.date,
+      createdAt: raw.createdAt?.toDate?.().toISOString() ?? null,
+      updatedAt: raw.updatedAt?.toDate?.().toISOString() ?? null,
+    };
+  })();
+  
   return <ProjectDetail projectDetail={detail} />;
 }

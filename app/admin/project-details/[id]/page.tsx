@@ -61,9 +61,10 @@ export default function EditProjectDetailPage() {
         urls.push(url);
       }
       setImages(prev => [...prev, ...urls]);
-    } catch (error) {
+    } catch {
       alert('Failed to upload image.');
-    } finally {
+    }
+     finally {
       setImageUploading(false);
     }
   };
@@ -79,7 +80,7 @@ export default function EditProjectDetailPage() {
         urls.push(url);
       }
       setTechIcons(prev => [...prev, ...urls]);
-    } catch (error) {
+    } catch  {
       alert('Failed to upload tech icon.');
     } finally {
       setIconUploading(false);
@@ -103,7 +104,7 @@ export default function EditProjectDetailPage() {
         date,
       });
       router.push('/admin/project-details');
-    } catch (error) {
+    } catch{
       alert('Failed to update project detail.');
     } finally {
       setSaving(false);
@@ -116,7 +117,7 @@ export default function EditProjectDetailPage() {
     try {
       await deleteProjectDetail(detailId);
       router.push('/admin/project-details');
-    } catch (error) {
+    } catch {
       alert('Failed to delete project detail.');
     } finally {
       setSaving(false);

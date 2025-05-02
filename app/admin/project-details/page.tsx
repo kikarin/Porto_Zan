@@ -2,23 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { getAllProjects, Project } from '@/lib/projectService';
-import { getProjectDetailsByProjectId, deleteProjectDetail } from '@/lib/projectDetailService';
+import { deleteProjectDetail } from '@/lib/projectDetailService';
 import Container from '@/components/Container';
 import Image from 'next/image';
+import type { ProjectDetail } from '../../../lib/projectDetailService';
 
 async function getAllProjectDetails() {
   const { db } = await import('@/lib/firebase');
   const { collection, getDocs, orderBy, query } = await import('firebase/firestore');
   const q = query(collection(db, 'projectDetails'), orderBy('createdAt', 'desc'));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  return querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    projectId: doc.data().projectId || '',
+    title: doc.data().title || '',
+    desc: doc.data().desc || '',
+    images: doc.data().images || [],
+    techIcons: doc.data().techIcons || [],
+    date: doc.data().date || '',
+  }));
 }
 
 export default function ProjectDetailsListPage() {
-  const router = useRouter();
-  const [projectDetails, setProjectDetails] = useState<any[]>([]);
+  const [projectDetails, setProjectDetails] = useState<ProjectDetail[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [filterProjectId, setFilterProjectId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -38,7 +45,7 @@ export default function ProjectDetailsListPage() {
     try {
       await deleteProjectDetail(id);
       setProjectDetails(prev => prev.filter(d => d.id !== id));
-    } catch (error) {
+    } catch  {
       alert('Failed to delete project detail.');
     } finally {
       setDeletingId(null);

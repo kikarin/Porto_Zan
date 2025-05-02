@@ -10,11 +10,12 @@ import { IoMdClose } from "react-icons/io";
 import Container from "./Container";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import type { ProjectDetail } from '../lib/projectDetailService';
 
 export default function ProjectDetail({
   projectDetail,
 }: {
-  projectDetail: any;
+  projectDetail: ProjectDetail
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImg, setModalImg] = useState<string | null>(null);
@@ -50,9 +51,6 @@ export default function ProjectDetail({
   };
 
   const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-  const handleMouseLeave = () => {
     setIsDragging(false);
   };
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
@@ -239,11 +237,6 @@ export default function ProjectDetail({
           className="bg-white rounded-xl shadow-2xl p-6 md:p-10 max-w-5xl mx-auto"
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
-            {projectDetail.category && (
-              <span className="px-4 py-2 bg-orange-400 text-white rounded-full text-sm font-semibold">
-                {projectDetail.category}
-              </span>
-            )}
             <span className="flex items-center gap-2 text-sm text-gray-500">
               <FaRegCalendarAlt />{" "}
               <span>

@@ -47,7 +47,7 @@ export default function NewProjectDetailPage() {
         urls.push(url);
       }
       setImages(prev => [...prev, ...urls]);
-    } catch (error) {
+    } catch  {
       alert('Failed to upload image.');
     } finally {
       setImageUploading(false);
@@ -65,7 +65,7 @@ export default function NewProjectDetailPage() {
         urls.push(url);
       }
       setTechIcons(prev => [...prev, ...urls]);
-    } catch (error) {
+    } catch  {
       alert('Failed to upload tech icon.');
     } finally {
       setIconUploading(false);
@@ -89,7 +89,7 @@ export default function NewProjectDetailPage() {
         date,
       });
       router.push('/admin/project-details');
-    } catch (error) {
+    } catch  {
       alert('Failed to save project detail.');
     } finally {
       setSaving(false);
