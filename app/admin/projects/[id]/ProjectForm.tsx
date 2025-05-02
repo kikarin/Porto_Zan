@@ -48,20 +48,6 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     category: 'Enterprise Solutions'
   });
 
-  useEffect(() => {
-    const session = Cookies.get('session');
-    if (!session) {
-      router.push('/admin');
-      return;
-    }
-
-    if (projectId !== 'new') {
-      fetchProject();
-    } else {
-      setLoading(false);
-    }
-  }, [projectId, router]);
-
   const fetchProject = async () => {
     try {
       const projectData = await getProject(projectId);
@@ -75,6 +61,20 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const session = Cookies.get('session');
+    if (!session) {
+      router.push('/admin');
+      return;
+    }
+
+    if (projectId !== 'new') {
+      fetchProject();
+    } else {
+      setLoading(false);
+    }
+  }, [projectId, router, fetchProject]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

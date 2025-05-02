@@ -1,22 +1,15 @@
-import dynamic from 'next/dynamic';
+'use client';
+
+import { useParams } from 'next/navigation';
 import { Suspense } from 'react';
+import ProjectForm from './ProjectForm';
 
-// Dynamic import ProjectForm karena dia Client Component
-const ProjectForm = dynamic(() => import('./ProjectForm'), {
-  ssr: false,
-  loading: () => <div>Loading form...</div>,
-});
+export default function ProjectPage() {
+  const { id } = useParams() as { id: string };
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function ProjectPage({ params }: PageProps) {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ProjectForm projectId={params.id} />
+      <ProjectForm projectId={id} />
     </Suspense>
   );
 }
