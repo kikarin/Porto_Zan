@@ -61,6 +61,19 @@ async function getProjectDetail(id: string): Promise<ProjectDetailType | null> {
   if (detailSnap.empty) return null;
 
   const raw = detailSnap.docs[0].data();
+
+  // Safe conversion for Firestore Timestamp to ISO string
+  const convertDate = (value: any): string | null => {
+    if (value instanceof Date) {
+      return value.toISOString();
+    }
+    if (value?.toDate && typeof value.toDate === "function") {
+      const date = value.toDate();
+      return date instanceof Date ? date.toISOString() : null;
+    }
+    return null;
+  };
+
   return {
     id: detailSnap.docs[0].id,
     projectId: raw.projectId,
@@ -69,7 +82,7 @@ async function getProjectDetail(id: string): Promise<ProjectDetailType | null> {
     images: raw.images,
     techIcons: raw.techIcons,
     date: raw.date,
-    createdAt: raw.createdAt?.toDate?.().toISOString() ?? null,
-    updatedAt: raw.updatedAt?.toDate?.toISOString() ?? null,
+    createdAt: convertDate(raw.createdAt),
+    updatedAt: convertDate(raw.updatedAt),
   };
 }
