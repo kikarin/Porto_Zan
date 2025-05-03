@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import { type ProjectDetail as ProjectDetailType } from "@/lib/projectDetailService";
-import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc,Timestamp  } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import ProjectDetail from "@/components/ProjectDetail";
 
@@ -63,16 +63,16 @@ async function getProjectDetail(id: string): Promise<ProjectDetailType | null> {
   const raw = detailSnap.docs[0].data();
 
   // Safe conversion for Firestore Timestamp to ISO string
-  const convertDate = (value: any): string | null => {
+  function convertDate(value: Timestamp | Date | null | undefined): string | null {
     if (value instanceof Date) {
       return value.toISOString();
     }
-    if (value?.toDate && typeof value.toDate === "function") {
+    if (value && "toDate" in value && typeof value.toDate === "function") {
       const date = value.toDate();
       return date instanceof Date ? date.toISOString() : null;
     }
     return null;
-  };
+  }
 
   return {
     id: detailSnap.docs[0].id,
