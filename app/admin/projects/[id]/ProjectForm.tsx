@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -48,11 +48,11 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     category: 'Enterprise Solutions'
   });
 
-  const fetchProject = async () => {
+  const fetchProject = useCallback(async () => {
     try {
       const projectData = await getProject(projectId);
       if (projectData) {
-        console.log('Fetched project:', projectData); // Debugging
+        console.log('Fetched project:', projectData);
         setProject(projectData);
       }
     } catch (error) {
@@ -60,7 +60,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [projectId]);
 
   useEffect(() => {
     const session = Cookies.get('session');

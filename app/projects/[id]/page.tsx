@@ -1,12 +1,19 @@
-import { Metadata } from "next";
+import { type Metadata } from "next";
+import { type ProjectDetail as ProjectDetailType } from "@/lib/projectDetailService";
 import { collection, getDocs, query, where, doc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import ProjectDetail from "@/components/ProjectDetail";
 
-// Fungsi untuk generate metadata
+// Mark this page as dynamic
+export const dynamic = "force-dynamic";
+
+// generateMetadata dengan params sebagai Promise
 export async function generateMetadata(
-  { params }: { params: { id: string } }): Promise<Metadata> {
-  const q = query(collection(db, "projectDetails"), where("projectId", "==", params.id));
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const { id } = await params;
+
+  const q = query(collection(db, "projectDetails"), where("projectId", "==", id));
   const snap = await getDocs(q);
 
   if (snap.empty) return { title: "Project Not Found" };
@@ -34,32 +41,35 @@ export async function generateMetadata(
   };
 }
 
-// Halaman utama untuk ProjectDetailPage
-interface PageProps {
-  params: {
-    id: string;
-  };
+// Komponen halaman utama juga dengan params sebagai Promise
+export default async function ProjectDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const detail = await getProjectDetail(id);
+  return <ProjectDetail projectDetail={detail} />;
 }
 
-export default async function ProjectDetailPage({ params }: PageProps) {
-  const q = query(collection(db, "projectDetails"), where("projectId", "==", params.id));
+// Ambil detail project
+async function getProjectDetail(id: string): Promise<ProjectDetailType | null> {
+  const q = query(collection(db, "projectDetails"), where("projectId", "==", id));
   const detailSnap = await getDocs(q);
-  const detail = detailSnap.empty
-    ? null
-    : (() => {
-        const raw = detailSnap.docs[0].data();
-        return {
-          id: detailSnap.docs[0].id,
-          projectId: raw.projectId,
-          title: raw.title,
-          desc: raw.desc,
-          images: raw.images,
-          techIcons: raw.techIcons,
-          date: raw.date,
-          createdAt: raw.createdAt?.toDate?.().toISOString() ?? null,
-          updatedAt: raw.updatedAt?.toDate?.().toISOString() ?? null,
-        };
-      })();
 
-  return <ProjectDetail projectDetail={detail} />;
+  if (detailSnap.empty) return null;
+
+  const raw = detailSnap.docs[0].data();
+  return {
+    id: detailSnap.docs[0].id,
+    projectId: raw.projectId,
+    title: raw.title,
+    desc: raw.desc,
+    images: raw.images,
+    techIcons: raw.techIcons,
+    date: raw.date,
+    createdAt: raw.createdAt?.toDate?.().toISOString() ?? null,
+    updatedAt: raw.updatedAt?.toDate?.toISOString() ?? null,
+  };
 }
