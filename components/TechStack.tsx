@@ -19,15 +19,19 @@ const techStack = [
   { name: "Tailwind CSS", img: "/tailwind.png", category: "Styling" },
   { name: "Bootstrap", img: "/bootstrap.png", category: "Styling" },
   { name: "Chakra UI", img: "/chakra.png", category: "Styling" },
-  { name: "Laravel", img: "/laravel.png", category: "Framework" },
-  { name: "Flutter", img: "/flutter.png", category: "Framework" },
-  { name: "Express.js", img: "/express.png", category: "Framework" },
-  { name: "Next.js", img: "/next.svg", category: "Framework" },
-  { name: "Vue.js", img: "/vuejs.png", category: "Framework" },
-  { name: "Node.js", img: "/nodejs.png", category: "Framework" },
-  { name: "React.js", img: "/react.png", category: "Library" },
-  { name: "Three.js", img: "/three.png", category: "Library" },
-  { name: "Framer Motion", img: "/framer.png", category: "Library" },
+  { name: "React.js", img: "/react.png", category: "Framework & Library" },
+  { name: "Vite", img: "/vite.svg", category: "Framework & Library" },
+  { name: "Laravel", img: "/laravel.png", category: "Framework & Library" },
+  { name: "Flutter", img: "/flutter.png", category: "Framework & Library" },
+  { name: "Express.js", img: "/express.png", category: "Framework & Library" },
+  { name: "Next.js", img: "/next.svg", category: "Framework & Library" },
+  { name: "Vue.js", img: "/vuejs.png", category: "Framework & Library" },
+  {
+    name: "Node.js",
+    img: "/nodejs.png",
+    category: "FraFramework & Librarymework",
+  },
+  { name: "Three.js", img: "/three.png", category: "Framework & Library" },
   { name: "Postman", img: "/postman.png", category: "API" },
   { name: "MySQL", img: "/mysql.png", category: "Database" },
   { name: "PostgreSQL", img: "/postgresql.svg", category: "Database" },
@@ -46,8 +50,7 @@ const categories = [
   "Language",
   "Styling",
   "Database",
-  "Framework",
-  "Library",
+  "Framework & Library",
   "API",
   "Version Control",
   "Deployment",
@@ -111,11 +114,10 @@ export default function TechStack() {
                   <motion.button
                     key={category}
                     whileHover={{ scale: 1.1 }}
-                    className={`px-5 py-2 rounded-full text-sm font-medium transition ${
-                      selectedCategory === category
+                    className={`px-5 py-2 rounded-full text-sm font-medium transition ${selectedCategory === category
                         ? "bg-orange-300 text-gray-900 shadow-lg"
                         : "bg-gray-800 text-gray-300 hover:bg-orange-300 hover:text-gray-900"
-                    }`}
+                      }`}
                     onClick={() => setSelectedCategory(category)}
                   >
                     {category} ({count})
@@ -128,8 +130,8 @@ export default function TechStack() {
             <div className="flex justify-center">
               <motion.div
                 layout
-                  className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
-                >
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+              >
                 <AnimatePresence>
                   {techStack
                     .filter(
