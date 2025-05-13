@@ -5,6 +5,12 @@ import Image from "next/image";
 import { useState } from "react";
 
 const certifications = [
+    {
+    title: "Prakerin Di PT Bonet Utama",
+    issuer: "PT Bonet Utama",
+    date: "10 Mei 2025",
+    logo: "/MUHAMMAD ILHAM FAUZAN.png", 
+  },
   {
     title: "Belajar Dasar AI",
     issuer: "Dicoding Indonesia",
