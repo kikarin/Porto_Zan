@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap');
-@import url('https://fonts.cdnfonts.com/css/lufga');
 @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+@import 'ckeditor5/ckeditor5.css';
 
 @tailwind base;
 @tailwind components;
@@ -25,7 +25,52 @@ body {
 
 
 .font-lufga {
-  font-family: "Lufga", sans-serif;
+  font-family: "Urbanist", sans-serif;
+}
+
+.ckeditor-wrapper .ck-editor__editable {
+  min-height: 180px;
+  color: #111827;
+}
+
+.project-description {
+  color: #374151;
+  font-size: 1rem;
+  line-height: 1.75;
+  word-break: break-word;
+}
+
+@media (min-width: 768px) {
+  .project-description {
+    font-size: 1.125rem;
+  }
+}
+
+.project-description p {
+  margin-bottom: 1rem;
+}
+
+.project-description ul,
+.project-description ol {
+  margin: 0 0 1rem 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.project-description ul {
+  list-style: disc;
+}
+
+.project-description ol {
+  list-style: decimal;
+}
+
+.project-description li {
+  margin-bottom: 0.5rem;
+}
+
+.project-description a {
+  color: #2563eb;
+  text-decoration: underline;
 }
 
 /* Navbar Outline Effect */

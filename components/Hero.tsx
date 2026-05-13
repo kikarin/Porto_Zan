@@ -2,21 +2,28 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SplitText from "./SplitText";
 import TrueFocus from "./TrueFocus";
 import { Parallax } from "react-scroll-parallax";
 
 const Hero = () => {
   const [isHovered, setIsHovered] = useState(false);
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  const [isMobile, setIsMobile] = useState(false);
   const containerRef = useRef(null);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <section
       id="hero"
       className="relative w-full min-h-screen flex flex-col items-center justify-between overflow-hidden"
-      ref={containerRef} // Pastikan containerRef dipasang di section
+      ref={containerRef} 
     >
       {/* Animasi Text Utama */}
       <motion.div
@@ -80,6 +87,7 @@ const Hero = () => {
               alt="Profile Picture"
               width={500}
               height={500}
+              priority
               className="object-contain rounded-xl"
             />
             </Parallax>

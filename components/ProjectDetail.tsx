@@ -1,32 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { IoSettingsOutline } from "react-icons/io5";
+import Link from "next/link";
+import {
+  IoChevronBack,
+  IoChevronForward,
+  IoSettingsOutline,
+} from "react-icons/io5";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdClose } from "react-icons/io";
 import Container from "./Container";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import type { ProjectDetail } from '../lib/projectDetailService';
+import type { ProjectDetail } from "../lib/projectDetailService";
 
 export default function ProjectDetail({
   projectDetail,
+  allProjectIds,
 }: {
-  projectDetail: ProjectDetail
+  projectDetail: ProjectDetail | null;
+  allProjectIds: string[];
 }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalImg, setModalImg] = useState<string | null>(null);
-  const [allIds, setAllIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const images: string[] = Array.isArray(projectDetail?.images)
+    ? projectDetail!.images
+    : [];
+
+  const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const isModalOpen = modalIndex !== null;
+  const modalImg =
+    modalIndex !== null && modalIndex >= 0 && modalIndex < images.length
+      ? images[modalIndex]
+      : null;
+
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 });
+
+  const resetTransform = useCallback(() => {
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+    setLastPosition({ x: 0, y: 0 });
+  }, []);
   
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -88,61 +103,81 @@ export default function ProjectDetail({
     };
   }, [isModalOpen]);
 
-  useEffect(() => {
-    async function fetchOrderedProjectIds() {
-      try {
-        const q = query(
-          collection(db, "projectDetails"),
-          orderBy("createdAt", "desc")
-        );
-        const snap = await getDocs(q);
-        const ids = snap.docs
-          .map((doc) => doc.data().projectId)
-          .filter(
-            (id): id is string => typeof id === "string" && id.length > 0
-          );
-        setAllIds(ids);
-      } catch (err) {
-        console.error(err);
-        setError("Gagal mengambil urutan detail proyek");
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchOrderedProjectIds();
-  }, []);
+  const openModal = useCallback(
+    (idx: number) => {
+      resetTransform();
+      setModalIndex(idx);
+    },
+    [resetTransform]
+  );
 
-  if (loading) return <div className="text-center py-20">Loading...</div>;
-  if (error || !projectDetail)
+  const closeModal = useCallback(() => {
+    setModalIndex(null);
+    resetTransform();
+  }, [resetTransform]);
+
+  const showPrev = useCallback(() => {
+    setModalIndex((prev) => {
+      if (prev === null || prev <= 0) return prev;
+      resetTransform();
+      return prev - 1;
+    });
+  }, [resetTransform]);
+
+  const showNext = useCallback(() => {
+    setModalIndex((prev) => {
+      if (prev === null || prev >= images.length - 1) return prev;
+      resetTransform();
+      return prev + 1;
+    });
+  }, [images.length, resetTransform]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        showPrev();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        showNext();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        closeModal();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen, showPrev, showNext, closeModal]);
+
+  if (!projectDetail)
     return (
       <div className="text-center text-red-600 py-20">
-        {error || "Proyek tidak ditemukan."}
+        Proyek tidak ditemukan.
       </div>
     );
-  const currentIndex = allIds.indexOf(projectDetail.projectId);
+
+  const currentIndex = allProjectIds.indexOf(projectDetail.projectId);
   const nextId =
-    currentIndex < allIds.length - 1 ? allIds[currentIndex + 1] : null;
-  const prevId = currentIndex > 0 ? allIds[currentIndex - 1] : null;
+    currentIndex >= 0 && currentIndex < allProjectIds.length - 1
+      ? allProjectIds[currentIndex + 1]
+      : null;
+  const prevId = currentIndex > 0 ? allProjectIds[currentIndex - 1] : null;
 
-  const openModal = (img: string) => {
-    setModalImg(img);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setModalImg(null);
-  };
+  const hasPrev = modalIndex !== null && modalIndex > 0;
+  const hasNext = modalIndex !== null && modalIndex < images.length - 1;
+  const descriptionHasHtml = /<\/?[a-z][\s\S]*>/i.test(projectDetail.desc);
 
   return (
     <div className="font-rubik min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-8">
       <Container>
         {/* Image Gallery */}
-        {Array.isArray(projectDetail.images) &&
-        projectDetail.images.length > 0 ? (
+        {images.length > 0 ? (
           <div className="w-full flex justify-center mb-8 pb-4">
             <div className="flex gap-4 overflow-x-auto overflow-y-hidden scrollbar-hide px-2">
-              {projectDetail.images.map((img: string, idx: number) => (
+              {images.map((img: string, idx: number) => (
                 <div
                   key={idx}
                   className="relative flex-shrink-0 rounded-2xl overflow-hidden shadow-lg border border-gray-300 cursor-pointer group transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
@@ -152,7 +187,7 @@ export default function ProjectDetail({
                     minWidth: 220,
                     background: "#f3f4f6",
                   }}
-                  onClick={() => openModal(img)}
+                  onClick={() => openModal(idx)}
                 >
                   <Image
                     src={img}
@@ -208,22 +243,77 @@ export default function ProjectDetail({
                   onTouchEnd={handleTouchEnd}
                   onTouchCancel={handleTouchCancel}
                 >
-                  <Image
-                    src={modalImg}
-                    alt="Zoomed"
-                    fill
-                    priority
-                    className="object-contain rounded-lg select-none"
-                    draggable={false}
-                  />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={modalIndex}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute inset-0"
+                    >
+                      <Image
+                        src={modalImg}
+                        alt={`${projectDetail.title} - ${
+                          (modalIndex ?? 0) + 1
+                        }`}
+                        fill
+                        priority
+                        className="object-contain rounded-lg select-none"
+                        draggable={false}
+                      />
+                    </motion.div>
+                  </AnimatePresence>
                 </div>
 
+                {/* Close Button */}
                 <button
+                  type="button"
                   onClick={closeModal}
-                  className="absolute top-6 right-6 p-2 rounded-full bg-white/80 text-gray-800 hover:bg-white transition"
+                  aria-label="Tutup"
+                  className="absolute top-6 right-6 p-2 rounded-full bg-white/80 text-gray-800 hover:bg-white transition z-10"
                 >
                   <IoMdClose size={30} />
                 </button>
+
+                {/* Prev Button */}
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showPrev();
+                    }}
+                    disabled={!hasPrev}
+                    aria-label="Gambar sebelumnya"
+                    className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 text-gray-800 hover:bg-white transition disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                  >
+                    <IoChevronBack size={28} />
+                  </button>
+                )}
+
+                {/* Next Button */}
+                {images.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      showNext();
+                    }}
+                    disabled={!hasNext}
+                    aria-label="Gambar berikutnya"
+                    className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/80 text-gray-800 hover:bg-white transition disabled:opacity-30 disabled:cursor-not-allowed z-10"
+                  >
+                    <IoChevronForward size={28} />
+                  </button>
+                )}
+
+                {/* Counter */}
+                {images.length > 1 && modalIndex !== null && (
+                  <div className="absolute bottom-6 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white/80 text-gray-800 text-sm font-medium z-10">
+                    {modalIndex + 1} / {images.length}
+                  </div>
+                )}
               </motion.div>
             </motion.div>
           )}
@@ -252,9 +342,16 @@ export default function ProjectDetail({
             {projectDetail.title}
           </h1>
 
-          <p className="text-gray-700 text-base md:text-lg leading-relaxed break-words mb-8 whitespace-pre-wrap">
-            {projectDetail.desc}
-          </p>
+          {descriptionHasHtml ? (
+            <div
+              className="project-description mb-8"
+              dangerouslySetInnerHTML={{ __html: projectDetail.desc }}
+            />
+          ) : (
+            <p className="project-description mb-8 whitespace-pre-wrap">
+              {projectDetail.desc}
+            </p>
+          )}
 
           {/* Tech Used */}
           {Array.isArray(projectDetail.techIcons) && (
@@ -284,44 +381,64 @@ export default function ProjectDetail({
 
           {/* Navigation Buttons */}
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-10 border-t pt-6">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={!prevId}
-              onClick={() => prevId && router.push(`/projects/${prevId}`)}
-              className={`flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all ${
-                prevId
-                  ? "bg-gray-800 text-white hover:bg-blue-700"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              ← Previous
-            </motion.button>
+            {prevId ? (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full md:w-auto"
+              >
+                <Link
+                  href={`/projects/${prevId}`}
+                  className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all bg-gray-800 text-white hover:bg-blue-700"
+                >
+                  ← Previous
+                </Link>
+              </motion.div>
+            ) : (
+              <button
+                disabled
+                className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all bg-gray-300 text-gray-500 cursor-not-allowed"
+              >
+                ← Previous
+              </button>
+            )}
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              disabled={!nextId}
-              onClick={() => nextId && router.push(`/projects/${nextId}`)}
-              className={`flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all ${
-                nextId
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
-              }`}
-            >
-              Next →
-            </motion.button>
+            {nextId ? (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full md:w-auto"
+              >
+                <Link
+                  href={`/projects/${nextId}`}
+                  className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Next →
+                </Link>
+              </motion.div>
+            ) : (
+              <button
+                disabled
+                className="flex items-center justify-center gap-2 w-full md:w-auto px-6 py-3 rounded-lg font-semibold shadow transition-all bg-gray-300 text-gray-500 cursor-not-allowed"
+              >
+                Next →
+              </button>
+            )}
           </div>
 
           {/* Back to Home */}
-          <motion.button
+          <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => router.push("/")}
-            className="mt-8 flex items-center justify-center gap-3 w-full px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition-all"
+            className="mt-8"
           >
-            <IoMdClose size={20} /> Kembali ke Halaman Utama
-          </motion.button>
+            <Link
+              href="/"
+              className="flex items-center justify-center gap-3 w-full px-6 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-blue-800 transition-all"
+            >
+              <IoMdClose size={20} /> Kembali ke Halaman Utama
+            </Link>
+          </motion.div>
         </motion.div>
       </Container>
     </div>

@@ -37,7 +37,7 @@ export default function ProfileCard() {
         >
           <div className="profile-img">
             <Image
-              src="/about.jpg"
+              src="/new.jpeg"
               alt="Profile Picture"
               width={330}
               height={330}

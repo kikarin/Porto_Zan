@@ -8,6 +8,7 @@ import { getAllProjects, Project } from '@/lib/projectService';
 import { getProjectDetail, updateProjectDetail, deleteProjectDetail } from '@/lib/projectDetailService';
 import { uploadImageToCloudinary } from '@/lib/uploadImage';
 import Image from 'next/image';
+import RichTextEditor from '@/components/RichTextEditor';
 
 export default function EditProjectDetailPage() {
   const router = useRouter();
@@ -149,7 +150,7 @@ export default function EditProjectDetailPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Description <span className="text-red-500">*</span></label>
-              <textarea value={desc} onChange={e => setDesc(e.target.value)} rows={3} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300" required />
+              <RichTextEditor value={desc} onChange={setDesc} />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Date (Year-Month) <span className="text-red-500">*</span></label>

@@ -176,7 +176,7 @@ export default function Projects() {
           layout
           className="font-rubik grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             {projects
               .filter(
                 (project) =>
@@ -200,7 +200,7 @@ export default function Projects() {
                       alt={`Image for ${project.title}`}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-110"
-                      priority
+                      priority={index < 3}
                       sizes="(max-width: 768px) 100vw, 800px"
                     />
 
@@ -241,7 +241,7 @@ export default function Projects() {
                         <Link
                           href={`/projects/${project.id}`}
                           className="px-4 py-2 bg-white text-gray-900 rounded-full font-medium shadow-md hover:bg-gray-200 transition-all"
-                          prefetch={false}
+                          prefetch
                         >
                           See Details
                         </Link>

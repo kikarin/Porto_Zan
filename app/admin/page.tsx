@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { IoEye, IoEyeOff } from 'react-icons/io5';
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { Project, getAllProjects, deleteProject } from '@/lib/projectService';
@@ -15,6 +16,7 @@ export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -148,21 +150,31 @@ export default function AdminDashboard() {
                     placeholder="Email address"
                   />
                 </div>
-                <div>
+                <div className="relative">
                   <label htmlFor="password" className="sr-only">
                     Password
                   </label>
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-orange-300 focus:border-orange-300 focus:z-10 sm:text-sm"
+                    className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-orange-300 focus:border-orange-300 focus:z-10 sm:text-sm"
                     placeholder="Password"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                    aria-pressed={showPassword}
+                    tabIndex={-1}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700 focus:outline-none focus:text-gray-700 z-20"
+                  >
+                    {showPassword ? <IoEyeOff size={20} /> : <IoEye size={20} />}
+                  </button>
                 </div>
               </div>
 
