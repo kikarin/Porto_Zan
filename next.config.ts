@@ -2,13 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["via.placeholder.com"],
-    formats: ['image/avif', 'image/webp'],
-  },
-  experimental: {
-    optimizeCss: true,
-    scrollRestoration: true,
-    typedRoutes: false, // Tambahkan ini
+    remotePatterns: [
+      { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "firebasestorage.googleapis.com" },
+      { protocol: "https", hostname: "i.ibb.co" },
+      { protocol: "https", hostname: "via.placeholder.com" },
+    ],
+    formats: ["image/avif", "image/webp"],
   },
 };
 
