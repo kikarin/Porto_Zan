@@ -1,3 +1,5 @@
+"use client";
+
 import { db } from "./firebase";
 import {
   collection,
@@ -8,8 +10,8 @@ import {
   getDoc,
   getDocs,
   serverTimestamp,
-  query,
-  orderBy,
+  type QueryDocumentSnapshot,
+  type DocumentData,
 } from "firebase/firestore";
 
 export interface Project {
@@ -24,15 +26,32 @@ export interface Project {
     link: string;
   };
   category: string;
+  sortOrder?: number;
   createdAt?: string | null;
   updatedAt?: string | null;
+}
+
+export function sortProjects(projects: Project[]): Project[] {
+  return [...projects].sort((a, b) => {
+    const orderA = a.sortOrder ?? Number.MAX_SAFE_INTEGER;
+    const orderB = b.sortOrder ?? Number.MAX_SAFE_INTEGER;
+    if (orderA !== orderB) return orderA - orderB;
+    return (b.createdAt ?? "").localeCompare(a.createdAt ?? "");
+  });
 }
 
 // Create new project
 export async function createProject(project: Omit<Project, 'id'>) {
   try {
+    const existing = await getDocs(collection(db, "projects"));
+    const maxOrder = existing.docs.reduce((max, docSnap) => {
+      const value = docSnap.data().sortOrder;
+      return typeof value === "number" ? Math.max(max, value) : max;
+    }, 0);
+
     const docRef = await addDoc(collection(db, "projects"), {
       ...project,
+      sortOrder: project.sortOrder ?? maxOrder + 1,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -43,29 +62,65 @@ export async function createProject(project: Omit<Project, 'id'>) {
   }
 }
 
+function mapProjectDoc(docSnap: QueryDocumentSnapshot<DocumentData>): Project {
+  const data = docSnap.data();
+  return {
+    id: docSnap.id,
+    title: data.title || "",
+    description: data.description || "",
+    img: data.img || "",
+    techIcons: data.techIcons || [],
+    cta: data.cta || { type: "", label: "", link: "" },
+    category: data.category || "",
+    sortOrder: typeof data.sortOrder === "number" ? data.sortOrder : undefined,
+    createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
+    updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
+  };
+}
+
 // Get all projects
 export async function getAllProjects(): Promise<Project[]> {
   try {
-    const q = query(collection(db, "projects"), orderBy("createdAt", "desc"));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        title: data.title,
-        description: data.description,
-        img: data.img,
-        techIcons: data.techIcons,
-        cta: data.cta,
-        category: data.category,
-        createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
-        updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
-      } as Project;
-    });
+    const querySnapshot = await getDocs(collection(db, "projects"));
+    return sortProjects(querySnapshot.docs.map(mapProjectDoc));
   } catch (error) {
     console.error("Error getting projects:", error);
     throw error;
   }
+}
+
+export async function updateProjectsSortOrder(
+  projects: Array<Pick<Project, "id" | "sortOrder">>
+): Promise<void> {
+  await Promise.all(
+    projects.map((project) => {
+      if (!project.id || typeof project.sortOrder !== "number") return Promise.resolve();
+      return updateDoc(doc(db, "projects", project.id), {
+        sortOrder: project.sortOrder,
+        updatedAt: serverTimestamp(),
+      });
+    })
+  );
+}
+
+export async function normalizeProjectSortOrders(projects: Project[]): Promise<Project[]> {
+  const sorted = sortProjects(projects);
+  const normalized = sorted.map((project, index) => ({
+    ...project,
+    sortOrder: index + 1,
+  }));
+
+  const needsUpdate = sorted.some(
+    (project, index) => project.sortOrder == null || project.sortOrder !== index + 1
+  );
+
+  if (needsUpdate) {
+    await updateProjectsSortOrder(
+      normalized.map((project) => ({ id: project.id, sortOrder: project.sortOrder }))
+    );
+  }
+
+  return normalized;
 }
 
 // Get single project
@@ -83,6 +138,7 @@ export async function getProject(id: string): Promise<Project | null> {
         techIcons: data.techIcons,
         cta: data.cta,
         category: data.category,
+        sortOrder: typeof data.sortOrder === "number" ? data.sortOrder : undefined,
         createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
         updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
       } as Project;
@@ -124,6 +180,7 @@ export const addProject = async (project: Omit<Project, 'id'>): Promise<void> =>
   try {
     await addDoc(collection(db, "projects"), {
       ...project,
+      sortOrder: project.sortOrder ?? 1,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { IoEye, IoEyeOff } from 'react-icons/io5';
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { Project, getAllProjects, deleteProject } from '@/lib/projectService';
+import { Project, getAllProjects, deleteProject, normalizeProjectSortOrders, updateProjectsSortOrder, sortProjects } from '@/lib/projectService';
 import Container from '@/components/Container';
 import Cookies from 'js-cookie';
 import { FirebaseError } from "firebase/app";
@@ -19,6 +19,7 @@ export default function AdminDashboard() {
   const [showPassword, setShowPassword] = useState(false);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reordering, setReordering] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
 
@@ -35,12 +36,39 @@ export default function AdminDashboard() {
   const fetchProjects = async () => {
     try {
       const projectsData = await getAllProjects();
-      console.log('Fetched projects:', projectsData); // Debugging
-      setProjects(projectsData);
+      const normalized = await normalizeProjectSortOrders(projectsData);
+      setProjects(normalized);
     } catch (error) {
       console.error('Error fetching projects:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const moveProject = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    const reordered = [...projects];
+    [reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]];
+    const withOrder = reordered.map((project, orderIndex) => ({
+      ...project,
+      sortOrder: orderIndex + 1,
+    }));
+
+    setProjects(withOrder);
+    setReordering(true);
+
+    try {
+      await updateProjectsSortOrder(
+        withOrder.map((project) => ({ id: project.id, sortOrder: project.sortOrder }))
+      );
+    } catch (error) {
+      console.error('Error updating project order:', error);
+      alert('Gagal menyimpan urutan project.');
+      setProjects(sortProjects(projects));
+    } finally {
+      setReordering(false);
     }
   };
 
@@ -234,8 +262,63 @@ export default function AdminDashboard() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {projects.map((project) => (
+          <>
+            <div className="mb-8 bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-xl font-semibold mb-2">Urutan Project</h2>
+              <p className="text-sm text-gray-500 mb-4">
+                Atur urutan tampilan project di halaman portfolio. Project nomor 1 tampil paling awal.
+              </p>
+              <div className="space-y-2">
+                {projects.map((project, index) => (
+                  <div
+                    key={project.id}
+                    className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50"
+                  >
+                    <span className="w-10 text-center font-bold text-orange-600 shrink-0">
+                      #{index + 1}
+                    </span>
+                    <div className="relative w-10 h-10 shrink-0 rounded overflow-hidden bg-white">
+                      {project.img ? (
+                        <Image
+                          src={project.img}
+                          alt={project.title}
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      ) : null}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{project.title}</p>
+                      <p className="text-xs text-gray-500 truncate">{project.category}</p>
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => moveProject(index, 'up')}
+                        disabled={index === 0 || reordering}
+                        className="px-3 py-1 rounded bg-white border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        aria-label={`Pindah ${project.title} ke atas`}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveProject(index, 'down')}
+                        disabled={index === projects.length - 1 || reordering}
+                        className="px-3 py-1 rounded bg-white border border-gray-300 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+                        aria-label={`Pindah ${project.title} ke bawah`}
+                      >
+                        ↓
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {projects.map((project, index) => (
               <motion.div
                 key={project.id}
                 initial={{ opacity: 0, y: 20 }}
@@ -263,6 +346,11 @@ export default function AdminDashboard() {
                       <span className="text-gray-400">No image available</span>
                     </div>
                   )}
+                  <div className="absolute top-2 left-2">
+                    <span className="px-2 py-1 bg-gray-900 text-white rounded-full text-sm">
+                      #{index + 1}
+                    </span>
+                  </div>
                   <div className="absolute top-2 right-2">
                     <span className="px-2 py-1 bg-orange-300 text-gray-900 rounded-full text-sm">
                       {project.category}
@@ -313,6 +401,7 @@ export default function AdminDashboard() {
               </motion.div>
             ))}
           </div>
+          </>
         )}
       </Container>
     </div>

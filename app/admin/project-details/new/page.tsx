@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Container from '@/components/Container';
 import { getAllProjects, Project } from '@/lib/projectService';
-import { createProjectDetail } from '@/lib/projectDetailService';
+import { createProjectDetail, getAllProjectDetails } from '@/lib/projectDetailService';
 import { uploadImageToCloudinary } from '@/lib/uploadImage';
 import Image from 'next/image';
 import RichTextEditor from '@/components/RichTextEditor';
@@ -23,9 +23,37 @@ export default function NewProjectDetailPage() {
   const [imageUploading, setImageUploading] = useState(false);
   const [iconUploading, setIconUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState('');
 
   useEffect(() => {
-    getAllProjects().then(setProjects);
+    let cancelled = false;
+
+    async function fetchProjects() {
+      try {
+        const [allProjects, existingDetails] = await Promise.all([
+          getAllProjects(),
+          getAllProjectDetails(),
+        ]);
+        const usedProjectIds = new Set(
+          existingDetails.map((detail) => detail.projectId).filter(Boolean)
+        );
+        const availableProjects = allProjects.filter(
+          (project) => project.id && !usedProjectIds.has(project.id)
+        );
+        if (!cancelled) setProjects(availableProjects);
+      } catch (error) {
+        console.error('Error fetching projects:', error);
+        if (!cancelled) setProjectsError('Gagal memuat daftar project.');
+      } finally {
+        if (!cancelled) setProjectsLoading(false);
+      }
+    }
+
+    fetchProjects();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -105,12 +133,28 @@ export default function NewProjectDetailPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Project <span className="text-red-500">*</span></label>
-              <select value={selectedProjectId} onChange={e => setSelectedProjectId(e.target.value)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300" required>
-                <option value="">Select a project</option>
-                {projects.map(p => (
+              <select
+                value={selectedProjectId}
+                onChange={e => setSelectedProjectId(e.target.value)}
+                className="block w-full rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-orange-300 focus:ring-orange-300"
+                required
+                disabled={projectsLoading}
+              >
+                <option value="">
+                  {projectsLoading ? 'Memuat project...' : 'Pilih project'}
+                </option>
+                {projects.filter(p => p.id).map(p => (
                   <option key={p.id} value={p.id}>{p.title}</option>
                 ))}
               </select>
+              {projectsError && (
+                <p className="text-sm text-red-600 mt-1">{projectsError}</p>
+              )}
+              {!projectsLoading && !projectsError && projects.length === 0 && (
+                <p className="text-sm text-amber-600 mt-1">
+                  Semua project sudah memiliki detail. Buat project baru di halaman admin terlebih dahulu.
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>

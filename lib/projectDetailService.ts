@@ -1,3 +1,5 @@
+"use client";
+
 import { db } from './firebase';
 import {
   collection,
@@ -23,6 +25,47 @@ export interface ProjectDetail {
   date: string; // format YYYY-MM
   createdAt?: string | null;
   updatedAt?: string | null;
+}
+
+// Get all project details
+export async function getAllProjectDetails(): Promise<ProjectDetail[]> {
+  try {
+    const q = query(collection(db, 'projectDetails'), orderBy('createdAt', 'desc'));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      return {
+        id: docSnap.id,
+        projectId: data.projectId || '',
+        title: data.title || '',
+        desc: data.desc || '',
+        images: data.images || [],
+        techIcons: data.techIcons || [],
+        date: data.date || '',
+        createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
+        updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
+      } as ProjectDetail;
+    });
+  } catch (error) {
+    console.warn('orderBy query failed, falling back to unfiltered fetch:', error);
+    const querySnapshot = await getDocs(collection(db, 'projectDetails'));
+    return querySnapshot.docs
+      .map((docSnap) => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          projectId: data.projectId || '',
+          title: data.title || '',
+          desc: data.desc || '',
+          images: data.images || [],
+          techIcons: data.techIcons || [],
+          date: data.date || '',
+          createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
+          updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
+        } as ProjectDetail;
+      })
+      .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
+  }
 }
 
 // Create new detail

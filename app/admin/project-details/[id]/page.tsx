@@ -28,18 +28,35 @@ export default function EditProjectDetailPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllProjects().then(setProjects);
-    getProjectDetail(detailId).then(detail => {
-      if (detail) {
-        setSelectedProjectId(detail.projectId);
-        setTitle(detail.title);
-        setDesc(detail.desc);
-        setDate(detail.date);
-        setImages(detail.images || []);
-        setTechIcons(detail.techIcons || []);
+    let cancelled = false;
+
+    async function fetchData() {
+      try {
+        const [projectsData, detail] = await Promise.all([
+          getAllProjects(),
+          getProjectDetail(detailId),
+        ]);
+        if (cancelled) return;
+        setProjects(projectsData);
+        if (detail) {
+          setSelectedProjectId(detail.projectId);
+          setTitle(detail.title);
+          setDesc(detail.desc);
+          setDate(detail.date);
+          setImages(detail.images || []);
+          setTechIcons(detail.techIcons || []);
+        }
+      } catch (error) {
+        console.error('Error fetching project detail data:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
-    });
+    }
+
+    fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, [detailId]);
 
   useEffect(() => {
@@ -137,9 +154,14 @@ export default function EditProjectDetailPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Project <span className="text-red-500">*</span></label>
-              <select value={selectedProjectId} onChange={e => setSelectedProjectId(e.target.value)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300" required>
-                <option value="">Select a project</option>
-                {projects.map(p => (
+              <select
+                value={selectedProjectId}
+                onChange={e => setSelectedProjectId(e.target.value)}
+                className="block w-full rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-orange-300 focus:ring-orange-300"
+                required
+              >
+                <option value="">Pilih project</option>
+                {projects.filter(p => p.id).map(p => (
                   <option key={p.id} value={p.id}>{p.title}</option>
                 ))}
               </select>

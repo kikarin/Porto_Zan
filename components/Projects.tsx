@@ -5,9 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import Container from "./Container";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import type { Project } from "../lib/projectService";
+import { getAllProjects, type Project } from "@/lib/projectService";
 
 // Fungsi untuk menampilkan CTA secara dinamis
 const renderCTA = (cta: { type: string; label: string; link: string }) => {
@@ -88,23 +86,7 @@ export default function Projects() {
   useEffect(() => {
     async function fetchProjects() {
       try {
-        const q = query(
-          collection(db, "projects"),
-          orderBy("createdAt", "desc")
-        );
-        const querySnapshot = await getDocs(q);
-        const data = querySnapshot.docs.map((doc) => {
-          const docData = doc.data();
-          return {
-            id: doc.id,
-            title: docData.title || "",
-            description: docData.description || "",
-            img: docData.img || "",
-            techIcons: docData.techIcons || [],
-            category: docData.category || "",
-            cta: docData.cta || { type: "", label: "", link: "" },
-          } as Project;
-        });
+        const data = await getAllProjects();
         setProjects(data);
       } catch (err) {
         if (err instanceof Error) {

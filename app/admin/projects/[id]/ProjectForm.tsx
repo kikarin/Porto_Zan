@@ -45,7 +45,8 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
       label: 'Private',
       link: ''
     },
-    category: 'Enterprise Solutions'
+    category: 'Enterprise Solutions',
+    sortOrder: undefined,
   });
 
   const fetchProject = useCallback(async () => {
@@ -210,6 +211,25 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                   <option key={category} value={category}>{category}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+              <input
+                type="number"
+                min={1}
+                value={project.sortOrder ?? ''}
+                onChange={(e) => setProject(prev => ({
+                  ...prev,
+                  sortOrder: e.target.value ? Number(e.target.value) : undefined,
+                }))}
+                placeholder={projectId === 'new' ? 'Otomatis jika dikosongkan' : 'Urutan tampil di portfolio'}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Angka lebih kecil tampil lebih dulu. Bisa juga diatur dari dashboard admin dengan tombol ↑ ↓.
+              </p>
             </div>
 
             {/* Main Image */}

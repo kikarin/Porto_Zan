@@ -3,26 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAllProjects, Project } from '@/lib/projectService';
-import { deleteProjectDetail } from '@/lib/projectDetailService';
+import { deleteProjectDetail, getAllProjectDetails } from '@/lib/projectDetailService';
 import Container from '@/components/Container';
 import Image from 'next/image';
 import type { ProjectDetail } from '../../../lib/projectDetailService';
-
-async function getAllProjectDetails() {
-  const { db } = await import('@/lib/firebase');
-  const { collection, getDocs, orderBy, query } = await import('firebase/firestore');
-  const q = query(collection(db, 'projectDetails'), orderBy('createdAt', 'desc'));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => ({
-    id: doc.id,
-    projectId: doc.data().projectId || '',
-    title: doc.data().title || '',
-    desc: doc.data().desc || '',
-    images: doc.data().images || [],
-    techIcons: doc.data().techIcons || [],
-    date: doc.data().date || '',
-  }));
-}
 
 export default function ProjectDetailsListPage() {
   const [projectDetails, setProjectDetails] = useState<ProjectDetail[]>([]);
@@ -32,11 +16,28 @@ export default function ProjectDetailsListPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    getAllProjects().then(setProjects);
-    getAllProjectDetails().then(details => {
-      setProjectDetails(details);
-      setLoading(false);
-    });
+    let cancelled = false;
+
+    async function fetchData() {
+      try {
+        const [projectsData, details] = await Promise.all([
+          getAllProjects(),
+          getAllProjectDetails(),
+        ]);
+        if (cancelled) return;
+        setProjects(projectsData);
+        setProjectDetails(details);
+      } catch (error) {
+        console.error('Error fetching project details page data:', error);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchData();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -66,9 +67,9 @@ export default function ProjectDetailsListPage() {
           </div>
           <div className="mb-6 flex gap-4 items-center">
             <label className="font-medium">Filter by Project:</label>
-            <select value={filterProjectId} onChange={e => setFilterProjectId(e.target.value)} className="rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300">
+            <select value={filterProjectId} onChange={e => setFilterProjectId(e.target.value)} className="rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-orange-300 focus:ring-orange-300">
               <option value="">All Projects</option>
-              {projects.map(p => (
+              {projects.filter(p => p.id).map(p => (
                 <option key={p.id} value={p.id}>{p.title}</option>
               ))}
             </select>
