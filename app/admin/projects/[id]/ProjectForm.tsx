@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { uploadImageToCloudinary } from '@/lib/uploadImage';
 import { Project, getProject, createProject, updateProject } from '@/lib/projectService';
 import Container from '@/components/Container';
 import Cookies from 'js-cookie';
+import { useImageUpload } from '@/hooks/useImageUpload';
+import { useFormImagePaste } from '@/hooks/useFormImagePaste';
+import ImagePasteHint from '@/components/ImagePasteHint';
 
 const categories = [
   "Enterprise Solutions",
@@ -33,8 +35,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [imageUploading, setImageUploading] = useState(false);
-  const [iconUploading, setIconUploading] = useState(false);
+  const { registerActiveUpload, handleFormPaste } = useFormImagePaste();
   const [project, setProject] = useState<Omit<Project, 'id'>>({
     title: '',
     description: '',
@@ -77,42 +78,24 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     }
   }, [projectId, router, fetchProject]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const mainImageUpload = useImageUpload({
+    onUploaded: (urls) => setProject((prev) => ({ ...prev, img: urls[0] })),
+    errorMessage: 'Failed to upload image. Please try again.',
+    disabled: saving,
+    registerActiveUpload,
+  });
 
-    try {
-      setImageUploading(true);
-      const imageUrl = await uploadImageToCloudinary(file);
-      console.log('Image uploaded:', imageUrl); // Debugging
-      setProject(prev => ({ ...prev, img: imageUrl }));
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
-    } finally {
-      setImageUploading(false);
-    }
-  };
-
-  const handleTechIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIconUploading(true);
-      const iconUrl = await uploadImageToCloudinary(file);
-      console.log('Icon uploaded:', iconUrl); // Debugging
-      setProject(prev => ({
+  const techIconUpload = useImageUpload({
+    onUploaded: (urls) =>
+      setProject((prev) => ({
         ...prev,
-        techIcons: [...prev.techIcons, iconUrl]
-      }));
-    } catch (error) {
-      console.error('Error uploading tech icon:', error);
-      alert('Failed to upload tech icon. Please try again.');
-    } finally {
-      setIconUploading(false);
-    }
-  };
+        techIcons: [...prev.techIcons, ...urls],
+      })),
+    multiple: true,
+    errorMessage: 'Failed to upload tech icon. Please try again.',
+    disabled: saving,
+    registerActiveUpload,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -173,7 +156,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             {projectId === 'new' ? 'Add New Project' : 'Edit Project'}
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} onPaste={handleFormPaste} className="space-y-6">
             {/* Title */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Title <span className="text-red-500">*</span></label>
@@ -235,7 +218,10 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             {/* Main Image */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Main Image <span className="text-red-500">*</span></label>
-              <div className="mt-1 border-2 border-dashed border-gray-300 rounded-md p-4">
+              <div
+                {...mainImageUpload.pasteZoneProps}
+                className={`mt-1 border-2 border-dashed border-gray-300 rounded-md p-4 ${mainImageUpload.pasteZoneProps.className}`}
+              >
                 <div className="flex flex-col items-center">
                   {project.img ? (
                     <div className="relative w-full h-48 mb-4">
@@ -257,7 +243,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
                   <div className="flex items-center justify-center">
                     <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md flex items-center transition-colors">
-                      {imageUploading ? (
+                      {mainImageUpload.uploading ? (
                         <>
                           <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-orange-300 mr-2"></span>
                           Uploading...
@@ -273,9 +259,9 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={handleImageUpload}
+                        onChange={mainImageUpload.handleFileInputChange}
                         className="hidden"
-                        disabled={imageUploading || saving}
+                        disabled={mainImageUpload.uploading || saving}
                       />
                     </label>
                     {project.img && (
@@ -283,12 +269,13 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                         type="button"
                         onClick={() => setProject(prev => ({ ...prev, img: '' }))}
                         className="ml-2 text-red-500 hover:text-red-700 transition-colors"
-                        disabled={imageUploading || saving}
+                        disabled={mainImageUpload.uploading || saving}
                       >
                         Remove
                       </button>
                     )}
                   </div>
+                  <ImagePasteHint />
                 </div>
               </div>
             </div>
@@ -296,7 +283,10 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
             {/* Tech Icons */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Tech Icons</label>
-              <div className="mt-1 border-2 border-dashed border-gray-300 rounded-md p-4">
+              <div
+                {...techIconUpload.pasteZoneProps}
+                className={`mt-1 border-2 border-dashed border-gray-300 rounded-md p-4 ${techIconUpload.pasteZoneProps.className}`}
+              >
                 <div className="flex flex-wrap gap-4 mb-4">
                   {project.techIcons.length > 0 ? (
                     project.techIcons.map((icon, index) => (
@@ -338,7 +328,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
 
                 <div className="flex items-center justify-center">
                   <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md flex items-center transition-colors">
-                    {iconUploading ? (
+                    {techIconUpload.uploading ? (
                       <>
                         <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-orange-300 mr-2"></span>
                         Uploading...
@@ -354,12 +344,14 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={handleTechIconUpload}
+                      multiple
+                      onChange={techIconUpload.handleFileInputChange}
                       className="hidden"
-                      disabled={iconUploading || saving}
+                      disabled={techIconUpload.uploading || saving}
                     />
                   </label>
                 </div>
+                <ImagePasteHint />
               </div>
             </div>
 
@@ -421,7 +413,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
               </button>
               <button
                 type="submit"
-                disabled={saving || imageUploading || iconUploading}
+                disabled={saving || mainImageUpload.uploading || techIconUpload.uploading}
                 className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center"
               >
                 {saving ? (

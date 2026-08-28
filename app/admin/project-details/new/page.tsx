@@ -6,9 +6,11 @@ import { motion } from 'framer-motion';
 import Container from '@/components/Container';
 import { getAllProjects, Project } from '@/lib/projectService';
 import { createProjectDetail, getAllProjectDetails } from '@/lib/projectDetailService';
-import { uploadImageToCloudinary } from '@/lib/uploadImage';
 import Image from 'next/image';
 import RichTextEditor from '@/components/RichTextEditor';
+import { useImageUpload } from '@/hooks/useImageUpload';
+import { useFormImagePaste } from '@/hooks/useFormImagePaste';
+import ImagePasteHint from '@/components/ImagePasteHint';
 
 export default function NewProjectDetailPage() {
   const router = useRouter();
@@ -20,11 +22,10 @@ export default function NewProjectDetailPage() {
   const [date, setDate] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [techIcons, setTechIcons] = useState<string[]>([]);
-  const [imageUploading, setImageUploading] = useState(false);
-  const [iconUploading, setIconUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [projectsLoading, setProjectsLoading] = useState(true);
   const [projectsError, setProjectsError] = useState('');
+  const { registerActiveUpload, handleFormPaste } = useFormImagePaste();
 
   useEffect(() => {
     let cancelled = false;
@@ -65,41 +66,19 @@ export default function NewProjectDetailPage() {
     }
   }, [selectedProjectId, projects]);
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    setImageUploading(true);
-    try {
-      const urls: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const url = await uploadImageToCloudinary(files[i]);
-        urls.push(url);
-      }
-      setImages(prev => [...prev, ...urls]);
-    } catch  {
-      alert('Failed to upload image.');
-    } finally {
-      setImageUploading(false);
-    }
-  };
+  const detailImagesUpload = useImageUpload({
+    onUploaded: (urls) => setImages((prev) => [...prev, ...urls]),
+    multiple: true,
+    disabled: saving,
+    registerActiveUpload,
+  });
 
-  const handleTechIconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    setIconUploading(true);
-    try {
-      const urls: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const url = await uploadImageToCloudinary(files[i]);
-        urls.push(url);
-      }
-      setTechIcons(prev => [...prev, ...urls]);
-    } catch  {
-      alert('Failed to upload tech icon.');
-    } finally {
-      setIconUploading(false);
-    }
-  };
+  const detailIconsUpload = useImageUpload({
+    onUploaded: (urls) => setTechIcons((prev) => [...prev, ...urls]),
+    multiple: true,
+    disabled: saving,
+    registerActiveUpload,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -130,7 +109,7 @@ export default function NewProjectDetailPage() {
       <Container>
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8">
           <h1 className="text-3xl font-bold mb-8">Add Project Detail</h1>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} onPaste={handleFormPaste} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Project <span className="text-red-500">*</span></label>
               <select
@@ -180,7 +159,19 @@ export default function NewProjectDetailPage() {
             {/* Images for detail */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Detail Images (multiple)</label>
-              <input type="file" accept="image/*" multiple onChange={handleImageUpload} disabled={imageUploading} />
+              <div
+                {...detailImagesUpload.pasteZoneProps}
+                className={`rounded-md border border-dashed border-gray-300 p-3 ${detailImagesUpload.pasteZoneProps.className}`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={detailImagesUpload.handleFileInputChange}
+                  disabled={detailImagesUpload.uploading || saving}
+                />
+                <ImagePasteHint />
+              </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {images.map((img, idx) => (
                   <div key={idx} className="relative w-20 h-20">
@@ -204,7 +195,19 @@ export default function NewProjectDetailPage() {
             {/* Tech icons for detail */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Detail Tech Icons (multiple)</label>
-              <input type="file" accept="image/*" multiple onChange={handleTechIconUpload} disabled={iconUploading} />
+              <div
+                {...detailIconsUpload.pasteZoneProps}
+                className={`rounded-md border border-dashed border-gray-300 p-3 ${detailIconsUpload.pasteZoneProps.className}`}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={detailIconsUpload.handleFileInputChange}
+                  disabled={detailIconsUpload.uploading || saving}
+                />
+                <ImagePasteHint />
+              </div>
               <div className="flex flex-wrap gap-2 mt-2">
                 {techIcons.map((icon, idx) => (
                   <div key={idx} className="relative w-12 h-12">
@@ -216,7 +219,7 @@ export default function NewProjectDetailPage() {
             </div>
             <div className="flex justify-end space-x-4 pt-4 border-t">
               <button type="button" onClick={() => router.push('/admin/project-details')} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors" disabled={saving}>Cancel</button>
-              <button type="submit" disabled={saving || imageUploading || iconUploading} className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center">{saving ? (<><span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900 mr-2"></span>Saving...</>) : ('Save Detail')}</button>
+              <button type="submit" disabled={saving || detailImagesUpload.uploading || detailIconsUpload.uploading} className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center">{saving ? (<><span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900 mr-2"></span>Saving...</>) : ('Save Detail')}</button>
             </div>
           </form>
         </motion.div>
