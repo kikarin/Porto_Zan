@@ -1,5 +1,3 @@
-"use client";
-
 // lib/firebase.ts
 import { initializeApp, getApps } from "firebase/app";
 import { getAuth } from "firebase/auth";
