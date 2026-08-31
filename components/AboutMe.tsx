@@ -59,18 +59,7 @@ export default function AboutMe() {
 
               {/* Deskripsi Diri */}
               <p className="font-rubik mt-4 text-lg text-gray-700 leading-relaxed text-justify md:text-left">
-                Saya adalah lulusan SMK Negeri 4 Kota Bogor dari jurusan
-                Pengembangan Perangkat Lunak dan Gim (PPLG), dengan fokus pada
-                pengembangan aplikasi web dan mobile. Saya telah menyelesaikan
-                program magang di PT Bonet Utama, sebuah perusahaan software
-                house, di mana saya terlibat dalam berbagai proyek nyata
-                menggunakan Laravel, Flutter, Next.js, Golang dan teknologi modern
-                lainnya. Saya memiliki kemampuan belajar yang cepat dan mampu
-                beradaptasi dengan berbagai tools dan framework baru. Dengan
-                pengalaman dalam membangun lebih dari 20 proyek digital untuk
-                instansi pendidikan, pemerintahan, dan klien freelance, saya
-                terus mengasah keterampilan teknis dan siap menghadapi tantangan
-                industri teknologi ke depannya.
+              Saya adalah Fullstack Developer di CV Summit Citra Teknologi yang berfokus pada pengembangan aplikasi web dan mobile. Saya merupakan mahasiswa Universitas Terbuka (UT) pada program studi Sistem Informasi, setelah sebelumnya menyelesaikan pendidikan SMK Negeri 4 Kota Bogor jurusan Pengembangan Perangkat Lunak dan Gim (PPLG). Dalam pengalaman profesional, saya terlibat dalam berbagai pengembangan dan maintenance sistem untuk instansi pemerintahan, perusahaan, serta kebutuhan client, menggunakan teknologi seperti Laravel, Vue.js, React, Next.js, Nuxt, Flutter, dan teknologi modern lainnya. Saya terbiasa bekerja dengan existing system, mengembangkan fitur baru, melakukan troubleshooting, serta beradaptasi dengan kebutuhan dan teknologi yang berbeda pada setiap project. Hingga saat ini, saya telah terlibat dalam lebih dari 20 proyek digital dan terus mengembangkan kemampuan teknis maupun pemahaman terhadap proses pengembangan software.
               </p>
 
               {/* Informasi Singkat dengan Ikon */}
