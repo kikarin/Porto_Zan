@@ -1,10 +1,10 @@
 import { type Metadata } from "next";
 import { cache } from "react";
 import { type ProjectDetail as ProjectDetailType } from "@/lib/projectDetailService";
+import { getNavigationProjectIds } from "@/lib/projectService";
 import {
   collection,
   getDocs,
-  orderBy,
   query,
   Timestamp,
   where,
@@ -41,18 +41,12 @@ function stripHtml(value: string | null | undefined): string {
 
 const getProjectDetailPageData = cache(
   async (id: string): Promise<ProjectDetailPageData> => {
-    const [detailSnap, orderedDetailsSnap] = await Promise.all([
+    const [detailSnap, allProjectIds] = await Promise.all([
       getDocs(
         query(collection(db, "projectDetails"), where("projectId", "==", id))
       ),
-      getDocs(
-        query(collection(db, "projectDetails"), orderBy("createdAt", "desc"))
-      ),
+      getNavigationProjectIds(),
     ]);
-
-    const allProjectIds = orderedDetailsSnap.docs
-      .map((doc) => doc.data().projectId)
-      .filter((projectId): projectId is string => typeof projectId === "string");
 
     if (detailSnap.empty) {
       return { detail: null, allProjectIds };

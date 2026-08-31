@@ -1,5 +1,6 @@
 import { db } from "./firebase";
 import { normalizeProjectCategory } from "./projectCategories";
+import { getAllProjectDetails } from "./projectDetailService";
 import {
   collection,
   addDoc,
@@ -86,6 +87,21 @@ export async function getAllProjects(): Promise<Project[]> {
     console.error("Error getting projects:", error);
     throw error;
   }
+}
+
+export async function getNavigationProjectIds(): Promise<string[]> {
+  const [projects, details] = await Promise.all([
+    getAllProjects(),
+    getAllProjectDetails(),
+  ]);
+
+  const projectIdsWithDetails = new Set(
+    details.map((detail) => detail.projectId).filter(Boolean)
+  );
+
+  return projects
+    .map((project) => project.id)
+    .filter((id): id is string => Boolean(id && projectIdsWithDetails.has(id)));
 }
 
 export async function updateProjectsSortOrder(
