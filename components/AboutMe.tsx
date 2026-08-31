@@ -91,7 +91,7 @@ export default function AboutMe() {
                 >
                   <HiOutlineBriefcase className="text-2xl text-orange-300" />
                   <p className="font-rubik text-gray-800">
-                    Freelance
+                    CV Summit Citra Teknologi
                   </p>
                 </motion.div>
 

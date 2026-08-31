@@ -11,6 +11,9 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useFormImagePaste } from '@/hooks/useFormImagePaste';
 import ImagePasteHint from '@/components/ImagePasteHint';
+import ProjectDetailDuplicateAssets, {
+  mergeUniqueUrls,
+} from '@/components/ProjectDetailDuplicateAssets';
 
 export default function NewProjectDetailPage() {
   const router = useRouter();
@@ -147,15 +150,16 @@ export default function NewProjectDetailPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">Date (Year-Month) <span className="text-red-500">*</span></label>
               <input type="month" value={date} onChange={e => setDate(e.target.value)} className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300" required />
             </div>
-            {/* Images from project (readonly) */}
-            {selectedProject && selectedProject.img && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project Main Image (readonly)</label>
-                <div className="flex flex-wrap gap-2">
-                  <Image src={selectedProject.img} alt="Project Main" width={80} height={80} className="object-contain rounded" unoptimized />
-                </div>
-              </div>
-            )}
+            <ProjectDetailDuplicateAssets
+              project={selectedProject}
+              disabled={saving || detailImagesUpload.uploading || detailIconsUpload.uploading}
+              onDuplicateImages={(urls) =>
+                setImages((prev) => mergeUniqueUrls(prev, urls))
+              }
+              onDuplicateTechIcons={(urls) =>
+                setTechIcons((prev) => mergeUniqueUrls(prev, urls))
+              }
+            />
             {/* Images for detail */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Detail Images (multiple)</label>
@@ -181,17 +185,6 @@ export default function NewProjectDetailPage() {
                 ))}
               </div>
             </div>
-            {/* Tech icons from project (readonly) */}
-            {selectedProject && selectedProject.techIcons && selectedProject.techIcons.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Project Tech Icons (readonly)</label>
-                <div className="flex flex-wrap gap-2">
-                  {selectedProject.techIcons.map((icon, idx) => (
-                    <Image key={idx} src={icon} alt={`Tech Icon ${idx + 1}`} width={40} height={40} className="object-contain rounded" unoptimized />
-                  ))}
-                </div>
-              </div>
-            )}
             {/* Tech icons for detail */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Detail Tech Icons (multiple)</label>
