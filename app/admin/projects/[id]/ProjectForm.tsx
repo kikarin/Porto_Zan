@@ -5,19 +5,17 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Project, getProject, createProject, updateProject } from '@/lib/projectService';
+import {
+  DEFAULT_PROJECT_CATEGORY,
+  PROJECT_CATEGORIES,
+  getProjectCategoryMeta,
+  normalizeProjectCategory,
+} from '@/lib/projectCategories';
 import Container from '@/components/Container';
 import Cookies from 'js-cookie';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useFormImagePaste } from '@/hooks/useFormImagePaste';
 import ImagePasteHint from '@/components/ImagePasteHint';
-
-const categories = [
-  "Enterprise Solutions",
-  "Client Projects",
-  "Academic Projects",
-  "Professional Training",
-  "Personal Development"
-];
 
 const ctaTypes = [
   { value: "live", label: "Live Demo" },
@@ -46,16 +44,19 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
       label: 'Private',
       link: ''
     },
-    category: 'Enterprise Solutions',
+    category: DEFAULT_PROJECT_CATEGORY,
     sortOrder: undefined,
   });
+  const selectedCategoryMeta = getProjectCategoryMeta(project.category);
 
   const fetchProject = useCallback(async () => {
     try {
       const projectData = await getProject(projectId);
       if (projectData) {
-        console.log('Fetched project:', projectData);
-        setProject(projectData);
+        setProject({
+          ...projectData,
+          category: normalizeProjectCategory(projectData.category),
+        });
       }
     } catch (error) {
       console.error('Error fetching project:', error);
@@ -187,13 +188,19 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
               <select
                 value={project.category}
                 onChange={(e) => setProject(prev => ({ ...prev, category: e.target.value }))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-300 focus:ring-orange-300"
+                className="mt-1 block w-full rounded-md border border-gray-300 bg-white text-gray-900 shadow-sm focus:border-orange-300 focus:ring-orange-300"
                 required
               >
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
+                {PROJECT_CATEGORIES.map((category) => (
+                  <option key={category.value} value={category.value}>
+                    {category.label}
+                  </option>
                 ))}
               </select>
+              <p className="mt-2 text-sm text-gray-600 bg-orange-50 border border-orange-100 rounded-md px-3 py-2">
+                <span className="font-medium text-gray-800">{selectedCategoryMeta.label}:</span>{' '}
+                {selectedCategoryMeta.description}
+              </p>
             </div>
 
             {/* Sort Order */}

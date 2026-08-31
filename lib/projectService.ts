@@ -1,4 +1,5 @@
 import { db } from "./firebase";
+import { normalizeProjectCategory } from "./projectCategories";
 import {
   collection,
   addDoc,
@@ -69,7 +70,7 @@ function mapProjectDoc(docSnap: QueryDocumentSnapshot<DocumentData>): Project {
     img: data.img || "",
     techIcons: data.techIcons || [],
     cta: data.cta || { type: "", label: "", link: "" },
-    category: data.category || "",
+    category: normalizeProjectCategory(data.category),
     sortOrder: typeof data.sortOrder === "number" ? data.sortOrder : undefined,
     createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
     updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
@@ -135,7 +136,7 @@ export async function getProject(id: string): Promise<Project | null> {
         img: data.img,
         techIcons: data.techIcons,
         cta: data.cta,
-        category: data.category,
+        category: normalizeProjectCategory(data.category),
         sortOrder: typeof data.sortOrder === "number" ? data.sortOrder : undefined,
         createdAt: data.createdAt?.toDate?.().toISOString() ?? null,
         updatedAt: data.updatedAt?.toDate?.().toISOString() ?? null,
