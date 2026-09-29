@@ -1,164 +1,143 @@
 "use client";
-import { motion } from "framer-motion";
-import Tilt from "react-parallax-tilt";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+import { PiArrowUpRightBold } from "react-icons/pi";
+import Container from "./Container";
+import SectionHeader from "./ui/SectionHeader";
+import Reveal from "./ui/Reveal";
+import { trackSpotlight } from "./ui/spotlight";
+
+const SERVICE_URL = "https://zan-stein.vercel.app/";
 
 const services = [
   {
+    no: "01",
     title: "Jasa Pembuatan Website",
     icon: "/website.png",
-    background: "/bg1.png",
+    description:
+      "Company profile, sistem informasi, dashboard admin, sampai toko online. Dibangun dengan Laravel, Next.js, atau Nuxt — disesuaikan dengan kebutuhan dan budget Anda.",
+    tags: ["Laravel", "Next.js", "Dashboard admin", "SEO-ready"],
+    featured: true,
   },
   {
+    no: "02",
     title: "Jasa Aplikasi Mobile",
     icon: "/mobile.png",
-    background: "/bg2.png",
+    description:
+      "Aplikasi Android dengan Flutter, dari MVP sampai aplikasi yang terhubung ke API dan Firebase.",
+    tags: ["Flutter", "Firebase", "REST API"],
   },
   {
+    no: "03",
     title: "Jasa Landing Page",
     icon: "/landing-page.png",
-    background: "/bg3.png",
+    description:
+      "Satu halaman yang fokus membuat pengunjung bertindak: daftar, beli, atau menghubungi Anda.",
+    tags: ["Responsive", "Cepat dimuat", "Animasi halus"],
   },
 ];
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 50 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.2,
-      duration: 0.6,
-      type: "spring",
-      stiffness: 50,
-    },
-  }),
-};
-
-const sectionVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: "easeOut" },
-  },
-};
-
 export default function MyServices() {
   return (
-    <motion.section
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={sectionVariants}
-      className="relative py-20 bg-gray-950 text-gray-100 rounded-3xl"
-    >
-      {/* Section Header */}
-      <div id="services" className="text-center mb-12">
-      <h2 className="font-rubik text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
-      My Services
-        </h2>
-        <p className="font-rubik mt-4 text-gray-400 text-lg md:text-xl">
-          Website, mobile application, and landing page creation services for
-          your business and assignment needs.
-        </p>
-      </div>
+    <section id="services" className="relative scroll-mt-24 pb-24 pt-28 md:pb-36 md:pt-40">
+      <Container>
+        <SectionHeader
+          index="01"
+          eyebrow="Services"
+          title={
+            <>
+              Things I can <em className="font-normal italic text-accent">build</em> for you
+            </>
+          }
+          description="Website, aplikasi mobile, dan landing page untuk kebutuhan bisnis maupun tugas akademik."
+        />
 
-      {/* Service Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto px-4">
-      {services.map((service, index) => (
-          <div key={index} className="relative group">
-            {/* Background Asset */}
-            <motion.img
-              src="/chibii.png"
-              alt="Background Asset"
-              initial={{
-                opacity: 0,
-                scale: 0.8,
-                x: index % 2 === 0 ? -20 : 50,
-                y: -30,
-              }}
-              animate={{
-                opacity: 0.19,
-                scale: [0.5, 1, 1],
-                rotate: [0, 1, -1, 1],
-              }}
-              whileInView={{ x: 0, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: 5,
-                ease: "easeOut",
-                delay: index * 0.2,
-                repeat: Infinity,
-                repeatType: "mirror",
-              }}
-              className={`absolute ${
-                index === 0
-                  ? "top-[-130px] left-[101px] w-[150px]"
-                  : index === 1
-                  ? "top-[-210px] left-[29px] transform -translate-x-1/2 w-[200px]"
-                  : "top-[-130px] right-[101px] w-[150px]"
-              } pointer-events-none z-0`}
-            />
-
-            {/* Service Card */}
-            <Tilt
-              tiltMaxAngleX={10}
-              tiltMaxAngleY={10}
-              glareEnable
-              glareBorderRadius="12px"
-              className="w-full"
+        <div className="grid gap-5 md:grid-cols-2 md:grid-rows-2">
+          {services.map((service, i) => (
+            <Reveal
+              key={service.title}
+              delay={i * 0.08}
+              className={`h-full ${service.featured ? "md:row-span-2" : ""}`}
             >
-              <motion.div
-                custom={index}
-                variants={cardVariants}
-                className="relative rounded-xl overflow-hidden shadow-lg bg-white/10 backdrop-blur-md flex flex-col text-center border border-transparent hover:border-orange-200 hover:shadow-2xl transition-all duration-300"
+              <a
+                href={SERVICE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onMouseMove={trackSpotlight}
+                data-cursor="Open"
+                className={`spotlight group relative flex h-full flex-col overflow-hidden rounded-[2rem] p-7 transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1 hover:shadow-lift md:p-9 ${
+                  service.featured
+                    ? "min-h-[420px] bg-sand shadow-soft md:min-h-full"
+                    : "surface min-h-[240px]"
+                }`}
               >
-                {/* Icon di Tengah Atas */}
-                <div className="absolute top-3 left-1/2 transform -translate-x-1/2 z-20">
-                  <Image
-                    src={service.icon}
-                    alt={service.title}
-                    width={80}
-                    height={80}
-                    className="w-20 h-20 object-contain bg-white rounded-full shadow-md group-hover:scale-110 transition-transform duration-300"
-                  />
+                <div className="flex items-start justify-between">
+                  <motion.span
+                    whileHover={{ rotate: [0, -12, 10, 0], transition: { duration: 0.5 } }}
+                    className={`grid place-items-center rounded-2xl bg-white shadow-soft transition-transform duration-500 ease-spring group-hover:-rotate-6 group-hover:scale-110 ${
+                      service.featured ? "h-20 w-20" : "h-14 w-14"
+                    }`}
+                  >
+                    <Image
+                      src={service.icon}
+                      alt=""
+                      width={56}
+                      height={56}
+                      className={service.featured ? "h-12 w-12" : "h-8 w-8"}
+                    />
+                  </motion.span>
+                  <span className="font-mono text-xs text-ink-faint">{service.no}</span>
                 </div>
 
-                {/* Overlay Content */}
-                <div className="flex flex-col items-center justify-end px-6 pb-6 pt-16 z-10 h-64">
-                  {/* Title */}
-                  <h3 className=" text-xl font-bold text-white mb-4 mt-6">
+                <div className={service.featured ? "mt-auto pt-16" : "mt-auto pt-8"}>
+                  <h3
+                    className={`font-display font-semibold tracking-[-0.03em] text-ink ${
+                      service.featured ? "text-4xl md:text-5xl" : "text-2xl md:text-[1.75rem]"
+                    }`}
+                  >
                     {service.title}
                   </h3>
-
-                  {/* Link Button */}
-                  <a
-                    href={`https://zan-stein.vercel.app/`}
-                    className="font-rubik flex items-center justify-center gap-2 px-4 py-2 bg-orange-300 text-gray-950 rounded-full hover:bg-orange-200 transition-all"
+                  <p
+                    className={`mt-3 max-w-[46ch] leading-relaxed text-ink-muted ${
+                      service.featured ? "text-lg" : "text-[0.95rem]"
+                    }`}
                   >
-                    See More
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="w-5 h-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M14 5l7 7m0 0l-7 7m7-7H3"
-                      />
-                    </svg>
-                  </a>
+                    {service.description}
+                  </p>
+
+                  <div className="mt-6 flex flex-wrap items-center justify-between gap-4">
+                    <ul className="flex flex-wrap gap-2">
+                      {service.tags.map((tag) => (
+                        <li
+                          key={tag}
+                          className="rounded-lg bg-white/70 px-2.5 py-1 font-mono text-[11px] text-ink-soft ring-1 ring-ink/5"
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-ink text-canvas transition-all duration-300 ease-spring group-hover:rotate-45 group-hover:bg-accent">
+                      <PiArrowUpRightBold aria-hidden />
+                      <span className="sr-only">Lihat detail {service.title}</span>
+                    </span>
+                  </div>
                 </div>
-              </motion.div>
-            </Tilt>
-          </div>
-        ))}
-      </div>
-    </motion.section>
+
+                {service.featured && (
+                  <Image
+                    src="/chibii.png"
+                    alt=""
+                    width={220}
+                    height={220}
+                    className="pointer-events-none absolute -right-6 top-10 w-36 rotate-6 opacity-90 drop-shadow-xl transition-transform duration-700 ease-spring group-hover:-translate-y-2 group-hover:rotate-[-4deg] md:w-48"
+                  />
+                )}
+              </a>
+            </Reveal>
+          ))}
+        </div>
+      </Container>
+    </section>
   );
 }

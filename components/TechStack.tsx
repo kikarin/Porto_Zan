@@ -1,9 +1,11 @@
 "use client";
-import { useState, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import Tilt from "react-parallax-tilt";
-import { HiEye, HiEyeOff } from "react-icons/hi";
+
+import { useMemo, useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import Container from "./Container";
+import SectionHeader from "./ui/SectionHeader";
+import Reveal from "./ui/Reveal";
 
 const techStack = [
   { name: "HTML", img: "/html.webp", category: "Language" },
@@ -26,11 +28,7 @@ const techStack = [
   { name: "Express.js", img: "/express.png", category: "Framework & Library" },
   { name: "Next.js", img: "/next.svg", category: "Framework & Library" },
   { name: "Vue.js", img: "/vuejs.png", category: "Framework & Library" },
-  {
-    name: "Node.js",
-    img: "/nodejs.png",
-    category: "FraFramework & Librarymework",
-  },
+  { name: "Node.js", img: "/nodejs.png", category: "Framework & Library" },
   { name: "Three.js", img: "/three.png", category: "Framework & Library" },
   { name: "Postman", img: "/postman.png", category: "API" },
   { name: "MySQL", img: "/mysql.png", category: "Database" },
@@ -48,9 +46,9 @@ const techStack = [
 const categories = [
   "All",
   "Language",
+  "Framework & Library",
   "Styling",
   "Database",
-  "Framework & Library",
   "API",
   "Version Control",
   "Deployment",
@@ -58,126 +56,109 @@ const categories = [
 
 export default function TechStack() {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [isVisible, setIsVisible] = useState(false);
 
-  const categoryCounts = useMemo(() => {
-    return techStack.reduce((acc, tech) => {
-      acc[tech.category] = (acc[tech.category] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-  }, []);
+  const categoryCounts = useMemo(
+    () =>
+      techStack.reduce<Record<string, number>>((acc, tech) => {
+        acc[tech.category] = (acc[tech.category] || 0) + 1;
+        return acc;
+      }, {}),
+    []
+  );
+
+  const filtered = useMemo(
+    () =>
+      techStack.filter((tech) => selectedCategory === "All" || tech.category === selectedCategory),
+    [selectedCategory]
+  );
 
   return (
-    <section id="techstack" className="py-20 text-gray-100 relative">
-      {/* Tombol Show/Hide */}
-      <div className="flex justify-center mb-6">
-        <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setIsVisible(!isVisible)}
-          className="font-rubik flex items-center gap-2 px-6 py-2 bg-gray-900 text-gray-300 rounded-full shadow-md hover:bg-orange-300 hover:text-gray-900 transition-all"
-          aria-label={isVisible ? "Hide Tech Stack" : "Show Tech Stack"}
-        >
-          {isVisible ? <HiEyeOff size={20} /> : <HiEye size={20} />}
-          {isVisible ? "Hide Tech Stack" : "Show Tech Stack"}
-        </motion.button>
-      </div>
+    <section id="techstack" className="relative scroll-mt-24 py-24 md:py-36">
+      <Container>
+        <SectionHeader
+          index="03"
+          eyebrow="Toolbox"
+          title={
+            <>
+              My daily <em className="font-normal italic text-accent">toolbox</em>
+            </>
+          }
+          description="Bahasa, framework, dan tools yang saya pakai untuk membangun project dari nol sampai deploy."
+          aside={
+            <p className="font-display text-7xl font-semibold tabular-nums leading-none tracking-tighter text-ink/10 md:text-8xl">
+              {String(techStack.length).padStart(2, "0")}
+            </p>
+          }
+        />
 
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.5 }}
-            className="overflow-hidden"
-          >
-            {/* Judul */}
-            <div className="text-center mb-10">
-              <h2 className="mt-4 font-rubik text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-gray-800 via-gray-900 to-gray-600 bg-clip-text text-transparent drop-shadow-lg">
-                My Tech Stack
-              </h2>
-              <p className="font-rubik mt-4 text-gray-600 text-lg md:text-xl">
-                Technologies I use to craft amazing projects.
-              </p>
-            </div>
-
-            {/* Filter Button */}
-            <div className="font-rubik flex flex-wrap justify-center gap-4 mb-8">
-              {categories.map((category) => {
-                const count =
-                  category === "All"
-                    ? techStack.length
-                    : categoryCounts[category] || 0;
-
-                return (
-                  <motion.button
-                    key={category}
-                    whileHover={{ scale: 1.1 }}
-                    className={`px-5 py-2 rounded-full text-sm font-medium transition ${selectedCategory === category
-                        ? "bg-orange-300 text-gray-900 shadow-lg"
-                        : "bg-gray-800 text-gray-300 hover:bg-orange-300 hover:text-gray-900"
-                      }`}
-                    onClick={() => setSelectedCategory(category)}
+        <Reveal className="-mx-5 mb-10 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0">
+          <div role="tablist" aria-label="Filter tech stack" className="isolate flex w-max gap-1.5 rounded-full bg-sand p-1.5">
+            {categories.map((category) => {
+              const count = category === "All" ? techStack.length : categoryCounts[category] || 0;
+              const isActive = selectedCategory === category;
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`relative flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                    isActive ? "text-canvas" : "text-ink-soft hover:text-ink"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="tech-tab"
+                      className="absolute inset-0 -z-10 rounded-full bg-ink"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative">{category}</span>
+                  <span
+                    className={`relative font-mono text-[11px] tabular-nums ${
+                      isActive ? "text-accent-200" : "text-ink-faint"
+                    }`}
                   >
-                    {category} ({count})
-                  </motion.button>
-                );
-              })}
-            </div>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </Reveal>
 
-            {/* Grid Tech Stack */}
-            <div className="flex justify-center">
-              <motion.div
+        <motion.ul layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          <AnimatePresence mode="popLayout">
+            {filtered.map((tech, i) => (
+              <motion.li
+                key={tech.name}
                 layout
-                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6"
+                initial={{ opacity: 0, scale: 0.85, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                whileHover={{ y: -6, rotate: i % 2 === 0 ? -3 : 3 }}
+                transition={{ type: "spring", stiffness: 260, damping: 20, delay: Math.min(i * 0.02, 0.3) }}
+                className="group relative flex flex-col items-center gap-3 rounded-3xl bg-white/70 px-3 pb-4 pt-6 shadow-soft ring-1 ring-ink/[0.05] backdrop-blur-sm transition-shadow duration-300 hover:shadow-lift"
               >
-                <AnimatePresence>
-                  {techStack
-                    .filter(
-                      (tech) =>
-                        selectedCategory === "All" ||
-                        tech.category === selectedCategory
-                    )
-                    .map((tech, index) => (
-                      <Tilt
-                        key={index}
-                        tiltMaxAngleX={5}
-                        tiltMaxAngleY={5}
-                        glareEnable={false}
-                        className="w-full"
-                      >
-                        <motion.div
-                          key={tech.name}
-                          initial={{ opacity: 0, scale: 0.9 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.8 }}
-                          className="relative flex flex-col items-center p-4 w-[150px] md:w-[180px] h-[160px] md:h-[180px] rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 hover:from-orange-400 hover:to-orange-300 transition-all duration-300 shadow-lg group overflow-hidden"
-                        >
-                          <div className="relative w-20 h-20 mb-4">
-                            {/* Shadow Bulat */}
-                            <div className="absolute inset-0 rounded-full bg-orange-100 opacity-30 blur-xl" />
-                            {/* Icon */}
-                            <Image
-                              src={tech.img}
-                              alt={`${tech.name} logo`}
-                              width={64}
-                              height={64}
-                              className="relative w-20 h-20 object-contain transition-transform duration-300 group-hover:scale-110"
-                            />
-                          </div>
-                          <h3 className="font-gotosans mt-3 text-sm md:text-lg font-semibold text-gray-100 group-hover:text-gray-900 transition-colors duration-300">
-                            {tech.name}
-                          </h3>
-                        </motion.div>
-                      </Tilt>
-                    ))}
-                </AnimatePresence>
-              </motion.div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                <span className="relative grid h-16 w-16 place-items-center">
+                  <Image
+                    src={tech.img}
+                    alt=""
+                    width={56}
+                    height={56}
+                    className="relative h-12 w-12 object-contain transition-transform duration-500 ease-spring group-hover:scale-110"
+                  />
+                </span>
+                <span className="text-center text-sm font-semibold text-ink">{tech.name}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-faint">
+                  {tech.category === "Framework & Library" ? "Framework" : tech.category}
+                </span>
+              </motion.li>
+            ))}
+          </AnimatePresence>
+        </motion.ul>
+      </Container>
     </section>
   );
 }

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
+import { PiArrowClockwiseBold, PiFolderDashedBold } from "react-icons/pi";
 import Container from "./Container";
+import SectionHeader from "./ui/SectionHeader";
+import Reveal from "./ui/Reveal";
+import { ProjectStack, ProjectList, DeviceCard, GroupLabel } from "./projects/ProjectLayouts";
 import { getAllProjects, type Project } from "@/lib/projectService";
 import { getAllProjectDetails } from "@/lib/projectDetailService";
 import {
@@ -14,69 +16,22 @@ import {
   normalizeProjectCategory,
 } from "@/lib/projectCategories";
 
-// Fungsi untuk menampilkan CTA secara dinamis
-const renderCTA = (cta: { type: string; label: string; link: string }) => {
-  const baseClass =
-    "px-4 py-2 rounded-full font-medium shadow-md transition-all";
-  switch (cta.type) {
-    case "live":
-      return (
-        <a
-          href={cta.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${baseClass} bg-orange-300 text-gray-950 hover:bg-orange-200`}
-        >
-          {cta.label}
-        </a>
-      );
-    case "github":
-      return (
-        <a
-          href={cta.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${baseClass} bg-gray-900 text-gray-100 hover:bg-gray-800`}
-        >
-          {cta.label}
-        </a>
-      );
-    case "private":
-      return (
-        <button
-          disabled
-          className={`${baseClass} bg-gray-300 text-gray-600 cursor-not-allowed`}
-        >
-          {cta.label}
-        </button>
-      );
-    case "visit":
-      return (
-        <a
-          href={cta.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`${baseClass} bg-blue-600 text-white hover:bg-blue-700`}
-        >
-          {cta.label}
-        </a>
-      );
-    case "download":
-      return (
-        <a
-          href={cta.link}
-          download
-          className={`${baseClass} bg-green-500 text-white hover:bg-green-600`}
-        >
-          {cta.label}
-        </a>
-      );
-    default:
-      return null;
-  }
-};
+const STACK_COUNT = 5;
+const LIST_COUNT = 6;
+const GRID_PAGE_SIZE = 6;
 
-const PROJECTS_PAGE_SIZE = 9;
+function ProjectsSkeleton() {
+  return (
+    <div aria-busy="true" aria-label="Memuat project" className="space-y-6">
+      <div className="skeleton h-[min(76dvh,600px)] w-full !rounded-[2.5rem]" />
+      <div className="space-y-3 pt-10">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="skeleton h-20 w-full" />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -84,11 +39,21 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [visibleCount, setVisibleCount] = useState(PROJECTS_PAGE_SIZE);
+  const [visibleCount, setVisibleCount] = useState(GRID_PAGE_SIZE);
 
   const filterCategories = useMemo(
     () => ["All", ...PROJECT_CATEGORIES.map((category) => category.value)],
     []
+  );
+
+  const categoryCounts = useMemo(
+    () =>
+      projects.reduce<Record<string, number>>((acc, project) => {
+        const key = normalizeProjectCategory(project.category);
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {}),
+    [projects]
   );
 
   const filteredProjects = useMemo(
@@ -101,214 +66,196 @@ export default function Projects() {
     [projects, selectedCategory]
   );
 
-  const visibleProjects = useMemo(
-    () => filteredProjects.slice(0, visibleCount),
-    [filteredProjects, visibleCount]
+  const stackProjects = filteredProjects.slice(0, STACK_COUNT);
+  const listProjects = filteredProjects.slice(STACK_COUNT, STACK_COUNT + LIST_COUNT);
+  const gridProjects = filteredProjects.slice(STACK_COUNT + LIST_COUNT);
+  const visibleGrid = gridProjects.slice(0, visibleCount);
+  const remainingProjects = gridProjects.length - visibleGrid.length;
+  const shownCount = stackProjects.length + listProjects.length + visibleGrid.length;
+
+  const getYear = useCallback(
+    (project: Project) => (project.id && projectYears[project.id]) || getProjectYear(project.createdAt),
+    [projectYears]
   );
 
-  const hasMoreProjects = visibleCount < filteredProjects.length;
-  const remainingProjects = filteredProjects.length - visibleCount;
-
   useEffect(() => {
-    setVisibleCount(PROJECTS_PAGE_SIZE);
+    setVisibleCount(GRID_PAGE_SIZE);
   }, [selectedCategory]);
 
-  useEffect(() => {
-    async function fetchProjects() {
-      try {
-        const [projectData, projectDetails] = await Promise.all([
-          getAllProjects(),
-          getAllProjectDetails(),
-        ]);
+  const fetchProjects = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [projectData, projectDetails] = await Promise.all([
+        getAllProjects(),
+        getAllProjectDetails(),
+      ]);
 
-        const yearMap = projectDetails.reduce<Record<string, string>>(
-          (acc, detail) => {
-            if (!detail.projectId) return acc;
-            const year = getProjectYear(null, detail.date);
-            if (year) acc[detail.projectId] = year;
-            return acc;
-          },
-          {}
-        );
+      const yearMap = projectDetails.reduce<Record<string, string>>((acc, detail) => {
+        if (!detail.projectId) return acc;
+        const year = getProjectYear(null, detail.date);
+        if (year) acc[detail.projectId] = year;
+        return acc;
+      }, {});
 
-        setProjects(projectData);
-        setProjectYears(yearMap);
-      } catch (err) {
-        if (err instanceof Error) {
-          setError("Gagal mengambil data proyek: " + err.message);
-        } else {
-          setError("Gagal mengambil data proyek");
-        }
-      } finally {
-        setLoading(false);
-      }
+      setProjects(projectData);
+      setProjectYears(yearMap);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? `Gagal mengambil data proyek: ${err.message}`
+          : "Gagal mengambil data proyek."
+      );
+    } finally {
+      setLoading(false);
     }
-    fetchProjects();
   }, []);
 
-  if (loading) return <div className="text-center py-20">Loading...</div>;
-  if (error)
-    return <div className="text-center text-red-600 py-20">{error}</div>;
+  useEffect(() => {
+    fetchProjects();
+  }, [fetchProjects]);
 
   return (
-    <section id="projects" className="py-20 text-gray-900">
+    <section id="projects" className="relative scroll-mt-24 py-24 md:py-36">
       <Container>
-        {/* Section Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-          className="text-center mb-12"
-        >
-          <h2 className="font-rubik text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-800 via-gray-900 to-gray-600 bg-clip-text text-transparent">
-            My Projects
-          </h2>
-          <p className="font-rubik mt-4 text-gray-600 text-lg md:text-xl">
-            Here are some of the projects I&rsquo;ve worked on.
-          </p>
-        </motion.div>
+        <SectionHeader
+          index="04"
+          eyebrow="Selected work"
+          title={
+            <>
+              Things I&apos;ve <em className="font-normal italic text-accent">shipped</em>
+            </>
+          }
+          description="Project dari klien, instansi, magang, sampai eksperimen pribadi. Klik salah satu untuk melihat ceritanya."
+          aside={
+            !loading &&
+            !error && (
+              <p className="font-display text-7xl font-semibold tabular-nums leading-none tracking-tighter text-ink/10 md:text-8xl">
+                {String(projects.length).padStart(2, "0")}
+              </p>
+            )
+          }
+        />
 
-        {/* Category Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="font-rubik mb-6"
-        >
-          <div className="flex flex-wrap justify-center gap-4">
-            {filterCategories.map((category, index) => (
-              <motion.button
-                key={category}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 shadow-md ${
-                  selectedCategory === category
-                    ? "bg-orange-300 text-gray-900 shadow-lg"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                {category === "All" ? "All" : getProjectCategoryMeta(category).label}
-              </motion.button>
-            ))}
+        <Reveal className="-mx-5 mb-12 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0">
+          <div role="tablist" aria-label="Filter projects" className="isolate flex w-max gap-1.5 rounded-full bg-sand p-1.5">
+            {filterCategories.map((category) => {
+              const isActive = selectedCategory === category;
+              const count = category === "All" ? projects.length : categoryCounts[category] || 0;
+              return (
+                <button
+                  key={category}
+                  type="button"
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`relative flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+                    isActive ? "text-canvas" : "text-ink-soft hover:text-ink"
+                  }`}
+                >
+                  {isActive && (
+                    <motion.span
+                      layoutId="project-tab"
+                      className="absolute inset-0 -z-10 rounded-full bg-ink"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative">
+                    {category === "All" ? "All work" : getProjectCategoryMeta(category).label}
+                  </span>
+                  {!loading && (
+                    <span
+                      className={`relative font-mono text-[11px] tabular-nums ${
+                        isActive ? "text-accent-200" : "text-ink-faint"
+                      }`}
+                    >
+                      {count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
-        </motion.div>
+        </Reveal>
 
-        {/* Projects Grid */}
-        <motion.div
-          layout
-          className="font-rubik grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          <AnimatePresence mode="popLayout">
-            {visibleProjects.map((project, index) => {
-                const categoryMeta = getProjectCategoryMeta(project.category);
-                const projectYear =
-                  (project.id && projectYears[project.id]) ||
-                  getProjectYear(project.createdAt);
+        {loading ? (
+          <ProjectsSkeleton />
+        ) : error ? (
+          <div role="alert" className="surface flex flex-col items-start gap-5 p-8 md:flex-row md:items-center md:justify-between md:p-10">
+            <div>
+              <p className="font-display text-2xl font-semibold tracking-tight">Project belum bisa dimuat.</p>
+              <p className="mt-2 max-w-[60ch] text-ink-muted">{error}</p>
+            </div>
+            <button type="button" onClick={fetchProjects} className="btn-primary shrink-0">
+              <PiArrowClockwiseBold />
+              Coba lagi
+            </button>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="flex flex-col items-center rounded-[2rem] border-2 border-dashed border-ink/10 px-6 py-20 text-center">
+            <span className="grid h-16 w-16 place-items-center rounded-2xl bg-sand text-3xl text-ink-muted">
+              <PiFolderDashedBold />
+            </span>
+            <p className="mt-6 font-display text-2xl font-semibold tracking-tight">
+              Belum ada project di kategori ini
+            </p>
+            <p className="mt-2 max-w-[44ch] text-ink-muted">
+              Project baru akan muncul di sini. Sementara itu, lihat semua project yang sudah ada.
+            </p>
+            <button type="button" onClick={() => setSelectedCategory("All")} className="btn-ghost mt-8">
+              Lihat semua project
+            </button>
+          </div>
+        ) : (
+          <motion.div
+            key={selectedCategory}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-24 md:space-y-32"
+          >
+            <div>
+              <GroupLabel index="A" title="Highlights" note={`${stackProjects.length} project`} />
+              <ProjectStack projects={stackProjects} getYear={getYear} />
+            </div>
 
-                return (
-                  <motion.div
-                    key={project.id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="relative w-full h-72 rounded-xl overflow-hidden shadow-lg transition-all duration-300 group flex flex-col bg-gradient-to-r from-gray-800 via-gray-900 to-gray-700"
-                  >
-                    {/* Gambar Project */}
-                    <div className="relative w-full h-full cursor-pointer">
-                      <Image
-                        src={project.img}
-                        alt={`Image for ${project.title}`}
-                        fill
-                        className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        priority={index < 3}
-                        sizes="(max-width: 768px) 100vw, 800px"
-                      />
+            {listProjects.length > 0 && (
+              <div>
+                <GroupLabel index="B" title="More work" note={`${listProjects.length} project`} />
+                <ProjectList projects={listProjects} startIndex={STACK_COUNT} getYear={getYear} />
+              </div>
+            )}
 
-                      {/* Overlay dan Konten Hover */}
-                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col items-center justify-center p-6 text-white text-center">
-                        {projectYear && (
-                          <span className="absolute top-4 left-4 px-3 py-1 bg-white/90 text-gray-900 rounded-full text-sm font-semibold">
-                            {projectYear}
-                          </span>
-                        )}
-
-                        {/* Category Badge */}
-                        <span className="absolute top-4 right-4 px-3 py-1 bg-orange-300 text-gray-900 rounded-full text-sm font-medium">
-                          {categoryMeta.label}
-                        </span>
-
-                        {/* Tech Icons */}
-                        <div className="mt-7 flex flex-wrap justify-center gap-3 mb-4">
-                          {project.techIcons.map((icon, i) => (
-                            <div
-                              key={i}
-                              className="bg-white/70 backdrop-blur-md p-3 rounded-full shadow-md flex items-center justify-center w-14 h-14"
-                            >
-                              <Image
-                                src={icon}
-                                alt={`Tech icon ${i + 1}`}
-                                width={190}
-                                height={190}
-                                className="object-contain"
-                              />
-                            </div>
-                          ))}
-                        </div>
-
-                        {/* Judul & Deskripsi */}
-                        <h3 className="text-2xl font-bold">{project.title}</h3>
-                        <p className="text-sm text-gray-300 line-clamp-3">
-                          {project.description}
-                        </p>
-
-                        {/* Tombol Dinamis & See Details */}
-                        <div className="font-rubik mt-1 flex gap-4 items-center">
-                          {renderCTA(project.cta)}
-                          <Link
-                            href={`/projects/${project.id}`}
-                            className="px-4 py-2 bg-white text-gray-900 rounded-full font-medium shadow-md hover:bg-gray-200 transition-all"
-                            prefetch
-                          >
-                            See Details
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-          </AnimatePresence>
-        </motion.div>
-
-        {filteredProjects.length > 0 && (
-          <p className="font-rubik mt-6 text-center text-sm text-gray-500">
-            Menampilkan {Math.min(visibleCount, filteredProjects.length)} dari{" "}
-            {filteredProjects.length} project
-          </p>
+            {gridProjects.length > 0 && (
+              <div>
+                <GroupLabel index="C" title="The archive" note={`${gridProjects.length} project`} />
+                <motion.div layout className="grid gap-x-8 gap-y-16 md:grid-cols-2 lg:grid-cols-3">
+                  <AnimatePresence mode="popLayout">
+                    {visibleGrid.map((project, i) => (
+                      <DeviceCard key={project.id} project={project} index={i} getYear={getYear} />
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+              </div>
+            )}
+          </motion.div>
         )}
 
-        {hasMoreProjects && (
-          <div className="font-rubik mt-6 flex justify-center">
-            <button
-              type="button"
-              onClick={() =>
-                setVisibleCount((prev) =>
-                  Math.min(prev + PROJECTS_PAGE_SIZE, filteredProjects.length)
-                )
-              }
-              className="px-6 py-3 rounded-full bg-orange-300 text-gray-900 font-medium shadow-md hover:bg-orange-200 transition-colors"
-            >
-              Load more ({remainingProjects} remaining)
-            </button>
+        {!loading && !error && filteredProjects.length > 0 && (
+          <div className="mt-14 flex flex-col items-center gap-4">
+            <p className="font-mono text-xs tabular-nums text-ink-muted">
+              {shownCount} / {filteredProjects.length} project
+            </p>
+            {remainingProjects > 0 && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((prev) => prev + GRID_PAGE_SIZE)}
+                className="btn-ghost"
+              >
+                Load more
+                <span className="font-mono text-xs tabular-nums text-ink-faint">+{remainingProjects}</span>
+              </button>
+            )}
           </div>
         )}
       </Container>

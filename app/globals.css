@@ -1,31 +1,159 @@
-@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
 @import 'ckeditor5/ckeditor5.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: #f6f1e9;
+    --foreground: #1d1a16;
+  }
 
-body {
-  font-family: "Urbanist", sans-serif;
-  background-color: #f3f4f6;
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-canvas font-sans text-ink;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    @apply bg-accent-200 text-ink;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
 }
 
-.font-urbanist {
-  font-family: "Urbanist", sans-serif;
+@layer components {
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-xs font-medium uppercase tracking-[0.18em] text-ink-muted;
+  }
+
+  .section-title {
+    @apply font-display text-[clamp(2.5rem,6vw,4.75rem)] font-semibold leading-[0.95] tracking-[-0.035em] text-ink;
+  }
+
+  .section-title em {
+    @apply inline-block pr-[0.06em] transition-transform duration-500 ease-spring;
+  }
+
+  .section-title:hover em {
+    transform: rotate(-5deg) scale(1.08) translateY(-0.04em);
+  }
+
+  .btn {
+    @apply relative inline-flex select-none items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.95rem] font-medium transition-[transform,background-color,box-shadow,color] duration-200 ease-out active:translate-y-px active:scale-[0.98];
+  }
+
+  .btn-primary {
+    @apply btn bg-ink text-canvas shadow-soft hover:-translate-y-0.5 hover:bg-accent hover:shadow-accent;
+  }
+
+  .btn-accent {
+    @apply btn bg-accent text-white shadow-accent hover:-translate-y-0.5 hover:bg-accent-600;
+  }
+
+  .btn-ghost {
+    @apply btn bg-white/60 text-ink ring-1 ring-ink/10 backdrop-blur hover:-translate-y-0.5 hover:bg-white hover:ring-ink/20;
+  }
+
+  .link-underline {
+    @apply relative inline-flex items-center gap-1.5 font-medium text-ink transition-colors hover:text-accent-600;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 300ms cubic-bezier(0.16, 1, 0.3, 1), color 200ms;
+  }
+
+  .link-underline:hover {
+    background-size: 100% 1.5px;
+  }
+
+  .surface {
+    @apply rounded-[1.75rem] bg-white/70 shadow-soft ring-1 ring-ink/[0.06] backdrop-blur-sm;
+  }
+
+  .skeleton {
+    @apply animate-shimmer rounded-2xl;
+    background-image: linear-gradient(90deg, #ede5d8 0%, #f6f1e9 50%, #ede5d8 100%);
+    background-size: 200% 100%;
+  }
 }
 
-.font-Rubik {
-  font-family: "Rubik", sans-serif;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .mask-fade-x {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
 }
 
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.35;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.27 0 0 0 0 0.18 0 0 0 0.18 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
 
-.font-lufga {
-  font-family: "Urbanist", sans-serif;
+.spotlight {
+  --x: 50%;
+  --y: 50%;
+}
+
+.spotlight::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--x) var(--y), rgba(224, 104, 60, 0.75), transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 300ms;
+  z-index: 2;
+}
+
+.spotlight:hover::before {
+  opacity: 1;
 }
 
 .ckeditor-wrapper .ck-editor__editable {
@@ -34,7 +162,7 @@ body {
 }
 
 .project-description {
-  color: #374151;
+  color: #3b362f;
   font-size: 1rem;
   line-height: 1.75;
   word-break: break-word;
@@ -69,313 +197,58 @@ body {
 }
 
 .project-description a {
-  color: #2563eb;
+  color: #c8532b;
   text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
-/* Navbar Outline Effect */
-.stroke-gray-300 {
-  stroke: #ffffff88;
-  transition: stroke-dasharray 0.5s, stroke-dashoffset 0.5s;
+.project-description h2,
+.project-description h3,
+.project-description h4 {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  color: #1d1a16;
+  margin: 2.25rem 0 0.85rem;
 }
 
-/* services */
-.bg-gradient-to-r {
-  background-size: 200%;
-  background-position: left;
-  transition: all 0.3s ease-in-out;
+.project-description h2 {
+  font-size: 1.85rem;
 }
 
-.bg-gradient-to-r:hover {
-  background-position: right;
+.project-description h3 {
+  font-size: 1.45rem;
 }
 
-/* Animasi transisi untuk overlay */
-.group:hover .group-hover\:opacity-100 {
-  opacity: 1;
-}
-.group-hover\:opacity-100 {
-  transition: opacity 0.5s ease-in-out;
+.project-description strong {
+  font-weight: 600;
+  color: #1d1a16;
 }
 
-
-/* Kartu Profil */
-.profile-card {
-  width: 330px;
-  height: 400px; /* Dari 400px ke 380px */
-  background: white;
-  border-radius: 10px;
-  text-align: center;
-  transition: all 0.5s;
-  position: relative;
-  box-shadow: 0 5px 3px #FDBA74;
-  overflow: hidden;
+.project-description ul li::marker,
+.project-description ol li::marker {
+  color: #e0683c;
 }
 
-.profile-card:hover {
-  box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.5);
-  background-color: #FDBA74;
+.project-description blockquote {
+  margin: 1.75rem 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  border-left: 3px solid #e0683c;
+  font-family: var(--font-display), sans-serif;
+  font-size: 1.25em;
+  color: #1d1a16;
 }
 
-/* Wrapper Gambar */
-.profile-img-wrapper {
-  width: 100px;
-  height: 100px;
-  margin: 30px auto 3px auto;
-  overflow: hidden;
-  border-radius: 50%;
-  transition: all 0.5s;
-  position: relative;
+.project-description code {
+  font-family: var(--font-mono), monospace;
+  font-size: 0.875em;
+  background: #ede5d8;
+  padding: 0.15em 0.4em;
+  border-radius: 0.375rem;
 }
 
-.profile-card:hover .profile-img-wrapper {
-  width: 100%;
-  height: 100%;
-  border-radius: 10px;
-}
-
-/* Gambar Profil */
-.profile-img {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.profile-img img {
-  object-fit: cover;
-}
-
-/* Nama */
-.profile-name {
-  padding: 13px 38px;
-  font-size: 34px;
-  transition: all 0.3s;
-  z-index: 5;
-  color: #151D2C;
-}
-
-.profile-name span {
-  font-size: 23px;
-}
-
-/* Ikon Sosial Media */
-.profile-icons {
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  margin-top: 76px;
-}
-
-.profile-icons a {
-  text-decoration: none;
-}
-
-.profile-icons .icon {
-  color: #151D2C;
-  font-size: 37px;
-  transition: all 0.3s;
-}
-
-.profile-icons .icon:hover {
-  color: #7E8690;
-  transform: scale(1.2);
-}
-
-/* Efek hover tetap diterapkan saat disentuh di mobile */
-.touched {
-  box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.5);
-  background-color: #FDBA74;
-}
-
-.touched .profile-img-wrapper {
-  width: 100% !important;
-  height: 100% !important;
-  border-radius: 10px !important;
-}
-
-
-/* Loader Hand */
-.hand-loader {
-  --skin-color: #E4C560;
-  --tap-speed: 0.6s;
-  --tap-stagger: 0.1s;
-  position: relative;
-  width: 80px;
-  height: 60px;
-  margin-left: 80px;
-}
-
-.hand-loader:before {
-  content: '';
-  display: block;
-  width: 180%;
-  height: 75%;
-  position: absolute;
-  top: 70%;
-  right: 20%;
-  background-color: black;
-  border-radius: 40px 10px;
-  filter: blur(10px);
-  opacity: 0.3;
-}
-
-.palm {
-  display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: var(--skin-color);
-  border-radius: 10px 40px;
-}
-
-.thumb {
-  position: absolute;
-  width: 120%;
-  height: 38px;
-  background-color: var(--skin-color);
-  bottom: -18%;
-  right: 1%;
-  transform-origin: calc(100% - 20px) 20px;
-  transform: rotate(-20deg);
-  border-radius: 30px 20px 20px 10px;
-  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-  border-left: 2px solid rgba(0, 0, 0, 0.1);
-}
-
-.thumb:after {
-  width: 20%;
-  height: 60%;
-  content: '';
-  background-color: rgba(255, 255, 255, 0.3);
-  position: absolute;
-  bottom: -8%;
-  left: 5px;
-  border-radius: 60% 10% 10% 30%;
-  border-right: 2px solid rgba(0, 0, 0, 0.05);
-}
-
-.finger {
-  position: absolute;
-  width: 80%;
-  height: 35px;
-  background-color: var(--skin-color);
-  bottom: 32%;
-  right: 64%;
-  transform-origin: 100% 20px;
-  animation-duration: calc(var(--tap-speed) * 2);
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  transform: rotate(10deg);
-}
-
-.finger:before {
-  content: '';
-  position: absolute;
-  width: 140%;
-  height: 30px;
-  background-color: var(--skin-color);
-  bottom: 8%;
-  right: 65%;
-  transform-origin: calc(100% - 20px) 20px;
-  transform: rotate(-60deg);
-  border-radius: 20px;
-}
-
-.finger:nth-child(1) {
-  animation-delay: 0;
-  filter: brightness(70%);
-  animation-name: tap-1;
-}
-
-.finger:nth-child(2) {
-  animation-delay: var(--tap-stagger);
-  filter: brightness(80%);
-  animation-name: tap-2;
-}
-
-.finger:nth-child(3) {
-  animation-delay: calc(var(--tap-stagger) * 2);
-  filter: brightness(90%);
-  animation-name: tap-3;
-}
-
-.finger:nth-child(4) {
-  animation-delay: calc(var(--tap-stagger) * 3);
-  filter: brightness(100%);
-  animation-name: tap-4;
-}
-
-@keyframes tap-1 {
-  0%, 50%, 100% {
-    transform: rotate(10deg) scale(0.4);
-  }
-  40% {
-    transform: rotate(50deg) scale(0.4);
-  }
-}
-
-@keyframes tap-2 {
-  0%, 50%, 100% {
-    transform: rotate(10deg) scale(0.6);
-  }
-  40% {
-    transform: rotate(50deg) scale(0.6);
-  }
-}
-
-@keyframes tap-3 {
-  0%, 50%, 100% {
-    transform: rotate(10deg) scale(0.8);
-  }
-  40% {
-    transform: rotate(50deg) scale(0.8);
-  }
-}
-
-@keyframes tap-4 {
-  0%, 50%, 100% {
-    transform: rotate(10deg) scale(1);
-  }
-  40% {
-    transform: rotate(50deg) scale(1);
-  }
-}
-
-
-/* SERTIFIKAT */
-.glass {
-  position: relative;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border-radius: 12px;
-  transition: transform 0.3s ease-in-out;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.glass:hover {
-  transform: scale(1.05);
-}
-
-/* Animasi saat modal muncul */
-.modal-enter {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+.project-description img {
+  border-radius: 1.25rem;
+  margin: 1.5rem 0;
 }

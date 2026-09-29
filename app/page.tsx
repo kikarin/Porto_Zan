@@ -7,7 +7,8 @@ import AboutMe from "@/components/AboutMe";
 import Projects from "@/components/Projects";
 import Certifications from "@/components/Certifications";
 import Contact from "@/components/Contact";
-import Container from "@/components/Container";
+import SectionTones from "@/components/SectionTones";
+import CrossedRibbons from "@/components/CrossedRibbons";
 
 export const metadata: Metadata = {
   title: "Zan Portfolio | Fullstack Developer",
@@ -38,16 +39,25 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <>
+      <SectionTones />
       <Navbar />
-      <Container>
-        <Hero />
+      <main id="main" tabIndex={-1} className="outline-none">
+        <Hero showWordmark />
         <MyServices />
         <AboutMe />
+        <CrossedRibbons
+          top={["Laravel", "Next.js", "Flutter", "Vue.js", "React", "Firebase"]}
+          bottom={["Web apps", "Mobile apps", "Landing pages", "Dashboards"]}
+        />
         <TechStack />
         <Projects />
         <Certifications />
+        <CrossedRibbons
+          top={["Punya ide?", "Let's build it", "Say hello"]}
+          bottom={["Open for freelance", "Bogor, Indonesia", "Reply via email"]}
+        />
         <Contact />
-      </Container>
+      </main>
     </>
   );
 }

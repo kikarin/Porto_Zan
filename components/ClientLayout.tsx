@@ -1,10 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import Background from "@/components/Background";
 import Footer from "@/components/Footer";
 import Loader from "@/components/Loader";
-import ParallaxWrapper from "@/components/ParallaxWrapper";
+import CursorFollower from "@/components/ui/CursorFollower";
+import ClickSpark from "@/components/ui/ClickSpark";
 
 export default function ClientLayout({
   children,
@@ -12,17 +15,26 @@ export default function ClientLayout({
   children: React.ReactNode;
 }) {
   const [isLoading, setIsLoading] = useState(true);
+  const pathname = usePathname();
+  const isAdmin = pathname?.startsWith("/admin");
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 1100);
     return () => clearTimeout(timer);
   }, []);
 
   return (
-    <ParallaxWrapper>
+    <>
       <Background />
-      {isLoading ? <Loader /> : children}
+      <AnimatePresence mode="wait">{isLoading && <Loader key="loader" />}</AnimatePresence>
+      {!isLoading && children}
       <Footer />
-    </ParallaxWrapper>
+      {!isAdmin && (
+        <>
+          <CursorFollower />
+          <ClickSpark />
+        </>
+      )}
+    </>
   );
 }
