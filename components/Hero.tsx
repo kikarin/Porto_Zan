@@ -12,7 +12,7 @@ const rotatingWords = ["Laravel", "Next.js", "Flutter", "Vue.js", "React"];
 
 const stickers = [
   { label: "Laravel", img: "/laravel.png", className: "left-[2%] top-[30%]", rotate: -10 },
-  { label: "Next.js", img: "/next.svg", className: "right-[0%] top-[18%]", rotate: 8 },
+  { label: "Node.js", img: "/nodejs.png", className: "right-[0%] top-[18%]", rotate: 8 },
   { label: "Flutter", img: "/flutter.png", className: "right-[4%] bottom-[22%]", rotate: -6 },
 ];
 
@@ -255,7 +255,9 @@ export default function Hero({ showWordmark = false }: { showWordmark?: boolean 
                 initial={false}
                 animate={{
                   opacity: revealed ? 1 : 0,
-                  scale: revealed ? 1.04 : 0.94,
+                  scale: revealed ? 0.30 : 0.94,
+                  x: -44,
+                  y: -44,
                   filter: revealed ? "blur(0px)" : "blur(8px)",
                 }}
                 transition={{ type: "spring", stiffness: 160, damping: 18 }}
@@ -264,7 +266,7 @@ export default function Hero({ showWordmark = false }: { showWordmark?: boolean 
                   src="/asset.png"
                   alt=""
                   fill
-                  sizes="(max-width: 1024px) 90vw, 560px"
+                  sizes="(max-width: 720px) 10vw, 560px"
                   className="object-contain"
                 />
               </motion.span>

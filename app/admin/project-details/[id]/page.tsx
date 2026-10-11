@@ -11,6 +11,8 @@ import RichTextEditor from '@/components/RichTextEditor';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useFormImagePaste } from '@/hooks/useFormImagePaste';
 import ImagePasteHint from '@/components/ImagePasteHint';
+import TechIconPicker from '@/components/admin/TechIconPicker';
+import { deleteUnusedUploads } from '@/lib/cloudinaryCleanup';
 import ProjectDetailDuplicateAssets, {
   mergeUniqueUrls,
 } from '@/components/ProjectDetailDuplicateAssets';
@@ -27,6 +29,7 @@ export default function EditProjectDetailPage() {
   const [date, setDate] = useState('');
   const [images, setImages] = useState<string[]>([]);
   const [techIcons, setTechIcons] = useState<string[]>([]);
+  const [initialTechIcons, setInitialTechIcons] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { registerActiveUpload, handleFormPaste } = useFormImagePaste();
@@ -49,6 +52,7 @@ export default function EditProjectDetailPage() {
           setDate(detail.date);
           setImages(detail.images || []);
           setTechIcons(detail.techIcons || []);
+          setInitialTechIcons(detail.techIcons || []);
         }
       } catch (error) {
         console.error('Error fetching project detail data:', error);
@@ -79,13 +83,6 @@ export default function EditProjectDetailPage() {
     registerActiveUpload,
   });
 
-  const detailIconsUpload = useImageUpload({
-    onUploaded: (urls) => setTechIcons((prev) => [...prev, ...urls]),
-    multiple: true,
-    disabled: saving,
-    registerActiveUpload,
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProjectId || !title || !desc || !date) {
@@ -102,6 +99,7 @@ export default function EditProjectDetailPage() {
         techIcons,
         date,
       });
+      await deleteUnusedUploads(initialTechIcons, techIcons);
       router.push('/admin/project-details');
     } catch{
       alert('Failed to update project detail.');
@@ -161,7 +159,7 @@ export default function EditProjectDetailPage() {
             </div>
             <ProjectDetailDuplicateAssets
               project={selectedProject}
-              disabled={saving || detailImagesUpload.uploading || detailIconsUpload.uploading}
+              disabled={saving || detailImagesUpload.uploading}
               onDuplicateImages={(urls) =>
                 setImages((prev) => mergeUniqueUrls(prev, urls))
               }
@@ -194,36 +192,17 @@ export default function EditProjectDetailPage() {
                 ))}
               </div>
             </div>
-            {/* Tech icons for detail */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Detail Tech Icons (multiple)</label>
-              <div
-                {...detailIconsUpload.pasteZoneProps}
-                className={`rounded-md border border-dashed border-gray-300 p-3 ${detailIconsUpload.pasteZoneProps.className}`}
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={detailIconsUpload.handleFileInputChange}
-                  disabled={detailIconsUpload.uploading || saving}
-                />
-                <ImagePasteHint />
-              </div>
-              <div className="flex flex-wrap gap-2 mt-2">
-                {techIcons.map((icon, idx) => (
-                  <div key={idx} className="relative w-12 h-12">
-                    <Image src={icon} alt={`Detail Icon ${idx + 1}`} fill className="object-contain rounded" unoptimized />
-                    <button type="button" className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center" onClick={() => setTechIcons(techIcons.filter((_, i) => i !== idx))}>×</button>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <TechIconPicker
+              label="Detail Tech Icons"
+              value={techIcons}
+              onChange={setTechIcons}
+              disabled={saving}
+            />
             <div className="flex justify-between space-x-4 pt-4 border-t">
               <button type="button" onClick={handleDelete} className="px-4 py-2 bg-red-200 text-red-800 rounded-md hover:bg-red-300 transition-colors" disabled={saving}>Delete</button>
               <div className="flex space-x-4">
                 <button type="button" onClick={() => router.push('/admin/project-details')} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors" disabled={saving}>Cancel</button>
-                <button type="submit" disabled={saving || detailImagesUpload.uploading || detailIconsUpload.uploading} className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center">{saving ? (<><span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900 mr-2"></span>Saving...</>) : ('Save Detail')}</button>
+                <button type="submit" disabled={saving || detailImagesUpload.uploading} className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center">{saving ? (<><span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-gray-900 mr-2"></span>Saving...</>) : ('Save Detail')}</button>
               </div>
             </div>
           </form>

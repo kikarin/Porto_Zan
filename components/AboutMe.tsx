@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Tilt from "react-parallax-tilt";
 import { motion } from "framer-motion";
@@ -16,6 +17,8 @@ import {
 import Container from "./Container";
 import Reveal from "./ui/Reveal";
 import { CV_HREF, EMAIL, SOCIAL_LINKS } from "@/lib/site";
+import { getAboutContent } from "@/lib/contentService";
+import { DEFAULT_ABOUT } from "@/lib/defaultContent";
 
 const facts = [
   { icon: PiBriefcaseBold, label: "Kerja", value: "CV Summit Citra Teknologi" },
@@ -31,6 +34,17 @@ const socials = [
 ];
 
 export default function AboutMe() {
+  const [photo, setPhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    getAboutContent()
+      .then((content) => setPhoto(content.photo))
+      .catch((error) => {
+        console.error("Error fetching about content:", error);
+        setPhoto(DEFAULT_ABOUT.photo);
+      });
+  }, []);
+
   return (
     <section id="about" className="relative scroll-mt-24 py-24 md:py-36">
       <Container>
@@ -55,14 +69,20 @@ export default function AboutMe() {
                   aria-hidden
                   className="absolute -top-3 left-1/2 z-raised h-7 w-28 -translate-x-1/2 rotate-[-3deg] rounded-sm bg-accent-200/80 shadow-sm"
                 />
-                <div className="relative aspect-[3/4] overflow-hidden rounded-[20px] bg-sand">
-                  <Image
-                    src="/new.jpeg"
-                    alt="Portrait of Muhammad Ilham Pauzan"
-                    fill
-                    sizes="(max-width: 1024px) 90vw, 380px"
-                    className="object-cover"
-                  />
+                <div
+                  className={`relative aspect-[3/4] overflow-hidden rounded-[20px] bg-sand ${
+                    photo ? "" : "animate-pulse"
+                  }`}
+                >
+                  {photo && (
+                    <Image
+                      src={photo}
+                      alt="Portrait of Muhammad Ilham Pauzan"
+                      fill
+                      sizes="(max-width: 1024px) 90vw, 380px"
+                      className="object-cover"
+                    />
+                  )}
                 </div>
                 <figcaption className="absolute inset-x-0 bottom-4 flex items-center justify-between px-6">
                   <span className="font-display text-xl font-semibold tracking-tight">Ilham Pauzan</span>

@@ -6,46 +6,27 @@ import { AnimatePresence, motion } from "framer-motion";
 import { PiXBold, PiMagnifyingGlassPlusBold } from "react-icons/pi";
 import Container from "./Container";
 import SectionHeader from "./ui/SectionHeader";
-
-const certifications = [
-  {
-    title: "Prakerin di PT Bonet Utama",
-    issuer: "PT Bonet Utama",
-    date: "10 Mei 2025",
-    logo: "/MUHAMMAD ILHAM FAUZAN.png",
-  },
-  {
-    title: "Belajar Dasar AI",
-    issuer: "Dicoding Indonesia",
-    date: "16 Desember 2024",
-    logo: "/dasar_ai.png",
-  },
-  {
-    title: "Belajar Membuat Aplikasi Flutter",
-    issuer: "Dicoding Indonesia",
-    date: "30 November 2024",
-    logo: "/flutter_pemula.png",
-  },
-  {
-    title: "Memulai Pemrograman dengan Dart",
-    issuer: "Dicoding Indonesia",
-    date: "27 November 2024",
-    logo: "/dart.png",
-  },
-  {
-    title: "Project Based Learning",
-    issuer: "PT Bonet Utama",
-    date: "21 Oktober 2022",
-    logo: "/bonet.jpg",
-  },
-];
+import { getCertifications } from "@/lib/contentService";
+import { DEFAULT_CERTIFICATIONS, type CertificationItem } from "@/lib/defaultContent";
 
 const tilts = [-4, 3, -2, 5, -3];
 
 export default function Certifications() {
+  const [certifications, setCertifications] = useState<CertificationItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<number | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const active = selected !== null ? certifications[selected] : null;
+
+  useEffect(() => {
+    getCertifications()
+      .then(setCertifications)
+      .catch((error) => {
+        console.error("Error fetching certifications:", error);
+        setCertifications(DEFAULT_CERTIFICATIONS);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   useEffect(() => {
     if (selected === null) return;
@@ -74,13 +55,21 @@ export default function Certifications() {
         />
 
         <ul className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5 lg:gap-5">
+          {loading &&
+            Array.from({ length: 5 }).map((_, i) => (
+              <li
+                key={i}
+                aria-hidden
+                className={`h-72 animate-pulse rounded-2xl bg-white/60 ring-1 ring-ink/5 ${i % 2 === 1 ? "lg:mt-12" : ""}`}
+              />
+            ))}
           {certifications.map((cert, i) => (
             <motion.li
-              key={cert.title}
+              key={cert.id ?? cert.title}
               initial={{ opacity: 0, y: 60, rotate: 0 }}
-              whileInView={{ opacity: 1, y: 0, rotate: tilts[i] }}
+              whileInView={{ opacity: 1, y: 0, rotate: tilts[i % tilts.length] }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ type: "spring", stiffness: 110, damping: 14, delay: i * 0.08 }}
+              transition={{ type: "spring", stiffness: 110, damping: 14, delay: Math.min(i * 0.08, 0.4) }}
               whileHover={{ rotate: 0, y: -10, scale: 1.04, zIndex: 10 }}
               className={`relative ${i % 2 === 1 ? "lg:mt-12" : ""}`}
             >

@@ -1,61 +1,30 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Container from "./Container";
 import SectionHeader from "./ui/SectionHeader";
 import Reveal from "./ui/Reveal";
+import { getTechStack } from "@/lib/contentService";
+import { DEFAULT_TECH_STACK, TECH_CATEGORIES, type TechStackItem } from "@/lib/defaultContent";
 
-const techStack = [
-  { name: "HTML", img: "/html.webp", category: "Language" },
-  { name: "CSS", img: "/css.webp", category: "Language" },
-  { name: "JavaScript", img: "/js.webp", category: "Language" },
-  { name: "TypeScript", img: "/ts.png", category: "Language" },
-  { name: "PHP", img: "/php.webp", category: "Language" },
-  { name: "Python", img: "/python.webp", category: "Language" },
-  { name: "Dart", img: "/dart.webp", category: "Language" },
-  { name: "Java", img: "/java.png", category: "Language" },
-  { name: "C++", img: "/c++.png", category: "Language" },
-  { name: "Golang", img: "/golang.png", category: "Language" },
-  { name: "Tailwind CSS", img: "/tailwind.png", category: "Styling" },
-  { name: "Bootstrap", img: "/bootstrap.png", category: "Styling" },
-  { name: "Chakra UI", img: "/chakra.png", category: "Styling" },
-  { name: "React.js", img: "/react.png", category: "Framework & Library" },
-  { name: "Vite", img: "/vite.svg", category: "Framework & Library" },
-  { name: "Laravel", img: "/laravel.png", category: "Framework & Library" },
-  { name: "Flutter", img: "/flutter.png", category: "Framework & Library" },
-  { name: "Express.js", img: "/express.png", category: "Framework & Library" },
-  { name: "Next.js", img: "/next.svg", category: "Framework & Library" },
-  { name: "Vue.js", img: "/vuejs.png", category: "Framework & Library" },
-  { name: "Node.js", img: "/nodejs.png", category: "Framework & Library" },
-  { name: "Three.js", img: "/three.png", category: "Framework & Library" },
-  { name: "Postman", img: "/postman.png", category: "API" },
-  { name: "MySQL", img: "/mysql.png", category: "Database" },
-  { name: "PostgreSQL", img: "/postgresql.svg", category: "Database" },
-  { name: "MariaDB", img: "/mariadb.png", category: "Database" },
-  { name: "Firebase", img: "/firebase.png", category: "Database" },
-  { name: "GitHub", img: "/github.png", category: "Version Control" },
-  { name: "GitLab", img: "/gitlab.png", category: "Version Control" },
-  { name: "Bitbucket", img: "/bitbucket.svg", category: "Version Control" },
-  { name: "Git Bash", img: "/git.png", category: "Version Control" },
-  { name: "Vercel", img: "/vercel1868.jpg", category: "Deployment" },
-  { name: "Ubuntu Server", img: "/ubuntu.png", category: "Deployment" },
-];
-
-const categories = [
-  "All",
-  "Language",
-  "Framework & Library",
-  "Styling",
-  "Database",
-  "API",
-  "Version Control",
-  "Deployment",
-];
+const categories = ["All", ...TECH_CATEGORIES];
 
 export default function TechStack() {
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [techStack, setTechStack] = useState<TechStackItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getTechStack()
+      .then(setTechStack)
+      .catch((error) => {
+        console.error("Error fetching tech stack:", error);
+        setTechStack(DEFAULT_TECH_STACK);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const categoryCounts = useMemo(
     () =>
@@ -63,13 +32,13 @@ export default function TechStack() {
         acc[tech.category] = (acc[tech.category] || 0) + 1;
         return acc;
       }, {}),
-    []
+    [techStack]
   );
 
   const filtered = useMemo(
     () =>
       techStack.filter((tech) => selectedCategory === "All" || tech.category === selectedCategory),
-    [selectedCategory]
+    [techStack, selectedCategory]
   );
 
   return (
@@ -86,7 +55,7 @@ export default function TechStack() {
           description="Bahasa, framework, dan tools yang saya pakai untuk membangun project dari nol sampai deploy."
           aside={
             <p className="font-display text-7xl font-semibold tabular-nums leading-none tracking-tighter text-ink/10 md:text-8xl">
-              {String(techStack.length).padStart(2, "0")}
+              {loading ? "--" : String(techStack.length).padStart(2, "0")}
             </p>
           }
         />
@@ -128,15 +97,19 @@ export default function TechStack() {
           </div>
         </Reveal>
 
-        <motion.ul layout className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-          <AnimatePresence mode="popLayout">
+        {loading ? (
+          <ul aria-hidden className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            {Array.from({ length: 12 }).map((_, i) => (
+              <li key={i} className="h-[136px] animate-pulse rounded-3xl bg-white/60 ring-1 ring-ink/[0.05]" />
+            ))}
+          </ul>
+        ) : (
+          <ul key={selectedCategory} className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
             {filtered.map((tech, i) => (
               <motion.li
-                key={tech.name}
-                layout
+                key={tech.id ?? tech.name}
                 initial={{ opacity: 0, scale: 0.85, y: 12 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.8 }}
                 whileHover={{ y: -6, rotate: i % 2 === 0 ? -3 : 3 }}
                 transition={{ type: "spring", stiffness: 260, damping: 20, delay: Math.min(i * 0.02, 0.3) }}
                 className="group relative flex flex-col items-center gap-3 rounded-3xl bg-white/70 px-3 pb-4 pt-6 shadow-soft ring-1 ring-ink/[0.05] backdrop-blur-sm transition-shadow duration-300 hover:shadow-lift"
@@ -152,12 +125,12 @@ export default function TechStack() {
                 </span>
                 <span className="text-center text-sm font-semibold text-ink">{tech.name}</span>
                 <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink-faint">
-                  {tech.category === "Framework & Library" ? "Framework" : tech.category}
+                  {tech.category}
                 </span>
               </motion.li>
             ))}
-          </AnimatePresence>
-        </motion.ul>
+          </ul>
+        )}
       </Container>
     </section>
   );

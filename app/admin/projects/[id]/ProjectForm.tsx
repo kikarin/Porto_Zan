@@ -16,6 +16,8 @@ import Cookies from 'js-cookie';
 import { useImageUpload } from '@/hooks/useImageUpload';
 import { useFormImagePaste } from '@/hooks/useFormImagePaste';
 import ImagePasteHint from '@/components/ImagePasteHint';
+import TechIconPicker from '@/components/admin/TechIconPicker';
+import { deleteUnusedUploads } from '@/lib/cloudinaryCleanup';
 
 const ctaTypes = [
   { value: "live", label: "Live Demo" },
@@ -47,6 +49,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     category: DEFAULT_PROJECT_CATEGORY,
     sortOrder: undefined,
   });
+  const [initialTechIcons, setInitialTechIcons] = useState<string[]>([]);
   const selectedCategoryMeta = getProjectCategoryMeta(project.category);
 
   const fetchProject = useCallback(async () => {
@@ -55,8 +58,10 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
       if (projectData) {
         setProject({
           ...projectData,
+          techIcons: projectData.techIcons || [],
           category: normalizeProjectCategory(projectData.category),
         });
+        setInitialTechIcons(projectData.techIcons || []);
       }
     } catch (error) {
       console.error('Error fetching project:', error);
@@ -86,18 +91,6 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
     registerActiveUpload,
   });
 
-  const techIconUpload = useImageUpload({
-    onUploaded: (urls) =>
-      setProject((prev) => ({
-        ...prev,
-        techIcons: [...prev.techIcons, ...urls],
-      })),
-    multiple: true,
-    errorMessage: 'Failed to upload tech icon. Please try again.',
-    disabled: saving,
-    registerActiveUpload,
-  });
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
@@ -123,8 +116,9 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
         await createProject(project);
       } else {
         await updateProject(projectId, project);
+        await deleteUnusedUploads(initialTechIcons, project.techIcons);
       }
-      
+
       router.push('/admin');
     } catch (error) {
       console.error('Error saving project:', error);
@@ -287,80 +281,11 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
               </div>
             </div>
 
-            {/* Tech Icons */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Tech Icons</label>
-              <div
-                {...techIconUpload.pasteZoneProps}
-                className={`mt-1 border-2 border-dashed border-gray-300 rounded-md p-4 ${techIconUpload.pasteZoneProps.className}`}
-              >
-                <div className="flex flex-wrap gap-4 mb-4">
-                  {project.techIcons.length > 0 ? (
-                    project.techIcons.map((icon, index) => (
-                      <div key={index} className="relative group">
-                        <div className="relative w-16 h-16 bg-gray-50 rounded-md overflow-hidden">
-                          <Image
-                            src={icon}
-                            alt={`Tech icon ${index + 1}`}
-                            fill
-                            className="object-contain p-2"
-                            onError={() => {
-                              // Handle error
-                              setProject(prev => ({
-                                ...prev,
-                                techIcons: prev.techIcons.filter((_, i) => i !== index)
-                              }));
-                            }}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setProject(prev => ({
-                            ...prev,
-                            techIcons: prev.techIcons.filter((_, i) => i !== index)
-                          }))}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                          disabled={saving}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="w-full text-center py-4 text-gray-400">
-                      No tech icons added yet
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-center">
-                  <label className="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md flex items-center transition-colors">
-                    {techIconUpload.uploading ? (
-                      <>
-                        <span className="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-orange-300 mr-2"></span>
-                        Uploading...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                        </svg>
-                        Add Tech Icon
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={techIconUpload.handleFileInputChange}
-                      className="hidden"
-                      disabled={techIconUpload.uploading || saving}
-                    />
-                  </label>
-                </div>
-                <ImagePasteHint />
-              </div>
-            </div>
+            <TechIconPicker
+              value={project.techIcons}
+              onChange={(techIcons) => setProject(prev => ({ ...prev, techIcons }))}
+              disabled={saving}
+            />
 
             {/* CTA Type */}
             <div>
@@ -420,7 +345,7 @@ export default function ProjectForm({ projectId }: ProjectFormProps) {
               </button>
               <button
                 type="submit"
-                disabled={saving || mainImageUpload.uploading || techIconUpload.uploading}
+                disabled={saving || mainImageUpload.uploading}
                 className="px-6 py-2 bg-orange-300 text-gray-900 rounded-md hover:bg-orange-200 transition-colors disabled:opacity-50 flex items-center"
               >
                 {saving ? (

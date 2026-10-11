@@ -243,6 +243,24 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        <nav aria-label="Kelola konten" className="mb-8 flex flex-wrap gap-3">
+          {[
+            { href: '/admin/about', label: 'Foto About' },
+            { href: '/admin/tech-stack', label: 'Tech Stack' },
+            { href: '/admin/certifications', label: 'Sertifikat' },
+            { href: '/admin/project-details', label: 'Project Details' },
+          ].map((link) => (
+            <button
+              key={link.href}
+              type="button"
+              onClick={() => router.push(link.href)}
+              className="bg-white border border-gray-200 text-gray-800 px-4 py-2 rounded-md shadow-sm hover:border-orange-300 hover:bg-orange-50 transition-colors"
+            >
+              {link.label}
+            </button>
+          ))}
+        </nav>
+
         {loading ? (
           <div className="text-center py-10">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-orange-300 mb-4"></div>
