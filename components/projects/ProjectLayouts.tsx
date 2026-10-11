@@ -184,43 +184,59 @@ export function ProjectList({ projects, startIndex, getYear }: { projects: Proje
         {projects.map((p, i) => {
           const year = getYear(p);
           return (
-            <li key={p.id} onMouseEnter={() => setActive(i)} onMouseLeave={() => setActive(null)}>
+            <li
+              key={p.id}
+              onMouseEnter={() => setActive(i)}
+              onMouseLeave={() => setActive(null)}
+              className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-ink/15 py-6 md:grid-cols-[4rem_1fr_13rem_auto] md:gap-6 md:py-7"
+            >
               <Link
                 href={`/projects/${p.id}`}
                 prefetch
-                className="group grid grid-cols-[auto_1fr_auto] items-center gap-4 border-b border-ink/15 py-6 md:grid-cols-[4rem_1fr_13rem_auto] md:gap-6 md:py-7"
+                aria-label={`Buka ${p.title}`}
+                className="relative block h-14 w-20 overflow-hidden rounded-lg bg-sand md:hidden"
               >
-                <span className="relative block h-14 w-20 overflow-hidden rounded-lg bg-sand md:hidden">
-                  <Image src={p.img} alt="" fill className="object-cover" sizes="80px" />
+                <Image src={p.img} alt="" fill className="object-cover" sizes="80px" />
+              </Link>
+              <Link
+                href={`/projects/${p.id}`}
+                prefetch
+                className="hidden font-mono text-sm tabular-nums text-ink-faint transition-colors group-hover:text-accent-600 md:block"
+              >
+                {pad(startIndex + i + 1)}
+              </Link>
+              <Link href={`/projects/${p.id}`} prefetch className="col-span-2 min-w-0 md:col-span-1">
+                <span className="block font-display text-2xl font-semibold tracking-[-0.04em] text-ink transition-transform duration-500 ease-spring group-hover:translate-x-3 md:text-5xl">
+                  {p.title}
                 </span>
-                <span className="hidden font-mono text-sm tabular-nums text-ink-faint transition-colors group-hover:text-accent-600 md:block">
-                  {pad(startIndex + i + 1)}
-                </span>
-                <span className="min-w-0">
-                  <span className="block font-display text-2xl font-semibold tracking-[-0.04em] text-ink transition-transform duration-500 ease-spring group-hover:translate-x-3 md:text-5xl">
-                    {p.title}
-                  </span>
-                  <span className="mt-1.5 block font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted transition-transform delay-75 duration-500 ease-spring group-hover:translate-x-3">
-                    {getProjectCategoryMeta(p.category).label}
-                    {year && ` · ${year}`}
-                  </span>
-                </span>
-                <span className="hidden items-center gap-2.5 md:flex">
-                  {p.techIcons?.slice(0, 5).map((icon, k) => (
-                    <Image
-                      key={k}
-                      src={icon}
-                      alt=""
-                      width={28}
-                      height={28}
-                      className="h-7 w-7 object-contain grayscale transition duration-300 group-hover:grayscale-0"
-                    />
-                  ))}
-                </span>
-                <span className="grid h-11 w-11 place-items-center rounded-full ring-1 ring-ink/15 transition-all duration-300 group-hover:rotate-45 group-hover:bg-accent group-hover:text-white group-hover:ring-accent">
-                  <PiArrowUpRightBold />
+                <span className="mt-1.5 block font-mono text-[11px] uppercase tracking-[0.14em] text-ink-muted transition-transform delay-75 duration-500 ease-spring group-hover:translate-x-3">
+                  {getProjectCategoryMeta(p.category).label}
+                  {year && ` · ${year}`}
                 </span>
               </Link>
+              <Link href={`/projects/${p.id}`} prefetch className="hidden items-center gap-2.5 md:flex">
+                {p.techIcons?.slice(0, 5).map((icon, k) => (
+                  <Image
+                    key={k}
+                    src={icon}
+                    alt=""
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 object-contain grayscale transition duration-300 group-hover:grayscale-0"
+                  />
+                ))}
+              </Link>
+              <span className="col-span-3 flex items-center justify-end gap-3 md:col-span-1">
+                <ProjectCTA cta={p.cta} />
+                <Link
+                  href={`/projects/${p.id}`}
+                  prefetch
+                  aria-label={`Buka case study ${p.title}`}
+                  className="grid h-11 w-11 shrink-0 place-items-center rounded-full ring-1 ring-ink/15 transition-all duration-300 group-hover:rotate-45 group-hover:bg-accent group-hover:text-white group-hover:ring-accent"
+                >
+                  <PiArrowUpRightBold />
+                </Link>
+              </span>
             </li>
           );
         })}
